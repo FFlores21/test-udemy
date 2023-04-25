@@ -1,0 +1,19 @@
+<div class="layout-container" [ngClass]="containerClass">
+
+    <!-- TODO: MENU DERECHO PARA FUTURO -->
+    <!-- <app-rightmenu></app-rightmenu> -->
+    <app-sidebar></app-sidebar>
+    
+    <div class="layout-content-wrapper">
+
+        <!-- <app-breadcrumb></app-breadcrumb> -->
+
+        <div class="layout-content col-12 m-0 p-3">
+            <router-outlet></router-outlet>
+        </div>
+
+    </div>
+    <!-- <app-config></app-config> -->
+    
+    <div *ngIf="layoutService.state.staticMenuMobileActive" class="layout-mask"></div>
+</div>

@@ -1,0 +1,34 @@
+<div class="grid mt-2">
+    <div class="col-12">
+        <div class="p-inputgroup">
+            <span class="p-inputgroup-addon"><i class="pi pi-user"></i></span>
+            <span class="p-float-label">
+                <p-dropdown inputId="state" 
+                            [options]="empleadosAutorizacion" 
+                            [(ngModel)]="codigoempleadoAutoriza"
+                            scrollHeight="130px"
+                            (onHide)="aplicarFocoPin()"
+                            optionLabel="nombre_empleado"
+                            optionValue="codigoempleado" 
+                            [autoDisplayFirst]="true" 
+                            styleClass="w-full">
+                </p-dropdown>
+                <label>Autorizado por</label>
+            </span>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="p-inputgroup">
+            <span class="p-inputgroup-addon"><i class="pi pi-key"></i></span>
+            <span class="p-float-label">
+                <input #inputPin [(ngModel)]="pin" type="password" pPassword autofocus (ngModelChange)="mostrarMensaje=false" (keyup.enter)="validarPin()"/>
+                <label>Pin</label>
+            </span>
+            <p-message *ngIf="mostrarMensaje" severity="error"></p-message>
+        </div>
+        <small id="username-help" class="p-error ml-6" *ngIf="mostrarMensaje">Pin no valido.</small>
+    </div>
+    <div class="col-12 flex justify-content-end mt-2">
+        <p-button icon="pi pi-check" label="Ok" styleClass="p-button-text" (click)="validarPin()"></p-button>
+    </div>
+</div>

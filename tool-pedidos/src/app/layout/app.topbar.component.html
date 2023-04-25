@@ -1,0 +1,165 @@
+<div class="layout-topbar">
+    <div class="layout-topbar-start">
+        <a class="layout-topbar-logo" routerLink="/">
+            <img class="layout-topbar-logo-full h-2rem" viewBox="0 0 167 32" src="assets/layout/images/logo-allas.png" alt="Logo Allas topbar" />
+            <img class="layout-topbar-logo-slim h-2rem" viewBox="0 0 167 32" src="assets/layout/images/logo-allas-vertical.png" alt="Logo Allas topbar" />
+        </a>
+        <a #menuButton class="layout-menu-button" (click)="onMenuButtonClick()" pRipple>
+            <i class="pi pi-chevron-right"></i>
+        </a>
+
+        <a #mobileMenuButton class="layout-topbar-mobile-button" (click)="onMobileTopbarMenuButtonClick()" pRipple>
+            <i class="pi pi-ellipsis-v"></i>
+        </a>
+    </div>
+
+    <div class="layout-topbar-end">
+        <div class="layout-topbar-actions-start">
+            <p-megaMenu [model]="menu" styleClass="layout-megamenu"></p-megaMenu>
+        </div>
+        <div class="layout-topbar-actions-end">
+            <ul class="layout-topbar-items">
+                <!-- TODO: PARA BUSQUEDA EN EL FUTURO-->
+                <!-- <li class="layout-topbar-search">
+                    <a pStyleClass="@next" enterClass="ng-hidden" enterActiveClass="px-scalein" leaveToClass="ng-hidden" leaveActiveClass="px-fadeout" [hideOnOutsideClick]="true" pRipple (click)="focusSearchInput()">
+                        <i class="pi pi-search"></i>
+                    </a>
+
+                    <div class="layout-search-panel ng-hidden p-input-filled">
+                        <i class="pi pi-search"></i>
+                        <input #searchInput type="text" pInputText placeholder="Search">
+                        <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-text p-button-plain" pStyleClass=".layout-search-panel" leaveToClass="ng-hidden" leaveActiveClass="px-fadeout"></button>
+                    </div>
+                </li> -->
+
+                <!-- TODO: PARA NOTIFICACIONES EN EL FUTURO-->
+                <!-- <li>
+                    <a pStyleClass="@next" enterClass="ng-hidden" enterActiveClass="px-scalein" leaveToClass="ng-hidden" leaveActiveClass="px-fadeout" [hideOnOutsideClick]="true" pRipple>
+                        <i class="pi pi-bell" pBadge severity="warning"></i>
+                    </a>
+                    <div class="ng-hidden">
+                        <ul class="list-none p-0 m-0">
+                            <li class="px-3 py-1">
+                                <span>You have <b>4</b> new notifications</span>
+                            </li>
+                            <li class="p-3">
+                                <div class="flex align-items-center">
+                                    <img src="assets/demo/images/avatar/avatar-1.png" />
+                                    <div class="flex flex-column ml-3 flex-1">
+                                        <div class="flex align-items-center justify-content-between mb-1">
+                                            <span class="font-bold">Jerome Bell</span>
+                                            <small>42 mins ago</small>
+                                        </div>
+                                        <span class="text-sm line-height-3">How to write content about your photographs?</span>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="p-3">
+                                <div class="flex align-items-center">
+                                    <img src="assets/demo/images/avatar/avatar-2.png"/>
+                                    <div class="flex flex-column ml-3 flex-1">
+                                        <div class="flex align-items-center justify-content-between mb-1">
+                                            <span class="fs-small font-bold">Cameron Williamson</span>
+                                            <small>48 mins ago</small>
+                                        </div>
+                                        <span class="text-sm line-height-3">Start a blog to reach your creative peak.</span>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="p-3">
+                                <div class="flex align-items-center">
+                                    <img src="assets/demo/images/avatar/avatar-3.png"/>
+                                    <div class="flex flex-column ml-3 flex-1">
+                                        <div class="flex align-items-center justify-content-between mb-1">
+                                            <span class="fs-small font-bold">Anna Miles</span>
+                                            <small>1 day ago</small>
+                                        </div>
+                                        <span class="text-sm line-height-3">Caring is the new marketing</span>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="p-3">
+                                <div class="flex align-items-center">
+                                    <img src="assets/demo/images/avatar/avatar-4.png"/>
+                                    <div class="flex flex-column ml-3 flex-1">
+                                        <div class="flex align-items-center justify-content-between mb-1">
+                                            <span class="fs-small font-bold">Arlene Mccoy</span>
+                                            <small>4 day ago</small>
+                                        </div>
+                                        <span class="text-sm line-height-3">Starting your traveling blog with Vasco.</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </li> -->
+                
+                <!-- MODULOS -->
+                <!-- <li>
+                    <a pStyleClass="@next" enterClass="ng-hidden" enterActiveClass="px-scalein" leaveToClass="ng-hidden" leaveActiveClass="px-fadeout" [hideOnOutsideClick]="true" pRipple>
+                        <i class="pi pi-table"></i>
+                    </a>
+                    <div class="ng-hidden">
+                        <div class="flex flex-wrap">
+                            <div *ngFor="let modulo of modulos" class="w-4 flex flex-column align-items-center p-3">
+                                <button 
+                                    pButton
+                                    routerLink="/"
+                                    class="p-button-rounded mb-2" 
+                                    [ngStyle]="{'background-color': modulo.color}" 
+                                    [icon]="modulo.icono" 
+                                    pRipple>
+                                </button>
+                                <span>{{modulo.modulo_nombre}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </li> -->
+
+                <!-- PERFIL DE USUARIO -->
+                <!-- <li>
+                    <a pStyleClass="@next" enterClass="ng-hidden" enterActiveClass="px-scalein" leaveToClass="ng-hidden" leaveActiveClass="px-fadeout" [hideOnOutsideClick]="true" pRipple>
+                        <img src="assets/demo/images/avatar/amyelsner.png" alt="avatar" class="w-2rem h-2rem">
+                    </a>
+                    <div class="ng-hidden">
+                        <ul class="list-none p-0 m-0">
+                            <li>
+                                <a class="cursor-pointer flex align-items-center py-2 hover:surface-hover transition-duration-150 transition-all px-3 py-2" pRipple>
+                                    <i class="pi pi-cog mr-2"></i>
+                                    <span>Settings</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="cursor-pointer flex align-items-center py-2 hover:surface-hover transition-duration-150 transition-all px-3 py-2" pRipple>
+                                    <i class="pi pi-file-o mr-2"></i>
+                                    <span>Terms of Usage</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="cursor-pointer flex align-items-center py-2 hover:surface-hover transition-duration-150 transition-all px-3 py-2" pRipple>
+                                    <i class="pi pi-compass mr-2"></i>
+                                    <span>Support</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="cursor-pointer flex align-items-center py-2 hover:surface-hover transition-duration-150 transition-all px-3 py-2" pRipple>
+                                    <i class="pi pi-power-off mr-2"></i>
+                                    <span>Logout</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                </li> -->
+
+                <!-- TODO: DESPLEGAR MENU DERECHO PARA FUTURO -->
+                <!-- <li>
+                    <a (click)="onRightMenuButtonClick()" pRipple>
+                        <i class="pi pi-arrow-left"></i>
+                    </a>
+                </li> -->
+
+            </ul>
+        </div>
+    </div>
+</div>

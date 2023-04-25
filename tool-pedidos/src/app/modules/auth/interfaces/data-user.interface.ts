@@ -1,0 +1,33 @@
+export interface DataUser {
+  codigoempleado: string;
+  nombre_empleado: string;
+  login_correcto: boolean;
+  inhabilitado: boolean;
+  esta_vacaciones: boolean;
+  clave_valida_aun: boolean;
+  mensaje_error: string;
+  empleado_vendedor_modulo: number;
+  tiene_plaza_activa: boolean;
+  id_depto_plaza: number;
+  id_region_plaza: number;
+  id_plaza: number;
+  id_cargo_plaza: number;
+  sucursal: string;
+  id_departamento_area: number;
+  nombre_usuario: string;
+  es_supervisor: boolean;
+  es_vendedor: boolean;
+  es_vendedor_virtual: boolean;
+  es_mayorista: boolean;
+  es_asesor_taller: boolean;
+  id_login_log: number;
+  texto_sesion_abieta: string;
+  sesion_abierta_en_otra_maquina: boolean;
+  permiso_gerencia: boolean;
+  codigo_vendendor: string;
+  id_pais: number;
+  icon_flag: string;
+  es_jefe_sucursal_virtual: boolean;
+  es_base_datos_oficial: boolean;
+  exp: number;
+}

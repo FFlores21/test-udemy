@@ -1,0 +1,281 @@
+<!-- CREAR PEDIDO -->
+
+    <div class="shadow main-center" >
+        <div class="grid text-center">
+            <div class="col-4 text-left">
+                <!-- <i class="pi pi-sync text-2xl font-bold" style="color: 'var(--primary-color)'"></i> -->
+            </div>
+            <div class="col-4">
+                <h5>Crear Pedido</h5>
+            </div>
+            <div class="col-4 text-right">
+                <i class="pi pi-plus-circle text-4xl font-bold" style="color: #33D233"
+                (click)="showDialogCreate()"
+                ></i>
+            </div>
+        </div>
+
+        <div class="grid">
+
+            <div class="col-6">
+                <div class="grid spacing">
+                    <div class="col-4 flex align-items-center justify-content-center">
+                        <h5 class="mb-0">Codigo Proveedor:</h5>
+                    </div>
+                    <div class="col-8">
+                        <p-dropdown
+                            [style]="{width: '100%'}"
+                            [options]="proveedores"
+                            [filter]="true"
+                            filterBy="proveedor"
+                            [showClear]="true"
+                            placeholder="Seleccione Proveedor"
+
+                            [virtualScroll]="true"
+                            [virtualScrollItemSize]="38"
+
+                            optionLabel="proveedor"
+                            appendTo="body"
+                            (onChange)="infoProveedor()"
+                            [(ngModel)]="selectedProveedor"
+                        ></p-dropdown>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6">
+
+                <div class="grid">
+                    <div class="col-4 flex align-items-center justify-content-center">
+                        <h5>Dirección:</h5>
+                    </div>
+                    <div class="col-8">
+                        <input type="text" 
+                        pInputText 
+                        [(ngModel)]="direccion" 
+                        [disabled]="true" 
+                        [style]="{width: '100%'}"
+                        />
+                    </div>
+                </div>
+                <div class="grid">
+                    <div class="col-4 flex align-items-center justify-content-center">
+                        <h5>Pais:</h5>
+                    </div>
+                    <div class="col-8">
+                        <input type="text" 
+                        pInputText 
+                        [(ngModel)]="pais" 
+                        [disabled]="true" 
+                        [style]="{width: '100%'}"
+                        />
+                    </div>
+                </div>
+
+                <div class="grid">
+                    <div class="col-4 flex align-items-center justify-content-center">
+                        <h5>Teléfono:</h5>
+                    </div>
+                    <div class="col-8">
+                        <input type="text" 
+                        pInputText 
+                        [(ngModel)]="telefono" 
+                        [disabled]="true" 
+                        [style]="{width: '100%'}"
+                        />
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+       
+        <div class="text-center">
+            <button  class="padd-button" type="button" pButton autofocus
+            (click)="createPedido()"
+            >CREAR</button>
+        </div>
+
+    </div>
+
+<!-- MOSTRAR PEDIDOS POR PROVEEDOR -->
+
+<div class="shadow main-padd">
+
+    <div class="text-center padd">       
+        <h5>Pedidos</h5>       
+    </div>
+
+    <div class=" text-right">
+        <p-dropdown
+            
+            [options]="estados"
+            [filter]="true"
+            filterBy="descripcionCorta"
+            [showClear]="true"
+            placeholder="Mostrar por Estado Pedido"
+            optionLabel="descripcionCorta"
+            appendTo="body"
+            [(ngModel)]="selectedEstados"
+            (onChange)="p?.filterGlobal(selectedEstados?.descripcionCorta , 'contains')"
+        ></p-dropdown>
+    </div>
+
+    <p-table
+            #p
+            [value]="pedidos"
+            [paginator]="true"
+            [rows]="5"
+            [showCurrentPageReport]="true"
+            styleClass="p-datatable-striped"
+            [globalFilterFields]="[
+                            'descripcionCorta'
+                            ]"
+            >
+            <ng-template pTemplate="header">
+                <tr>
+                   
+                    <th>Numero de Pedido</th>
+                    <th>Fecha de Creacion</th>
+                    <th>Estado</th>
+                   
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-pedido>
+                <tr>
+                   
+                    <td>{{ pedido.numeroPedido }}</td>
+                    <td>{{ pedido.fecha }}</td>
+                    <td>{{ pedido.descripcionCorta }}</td>
+
+                </tr>
+            </ng-template>
+        </p-table>  
+
+</div>
+
+
+<!-- DIALOG CREATE -->
+
+<p-dialog
+    header="CREAR"
+    [(visible)]="displayCreate"
+    [style]="{ width: '80vw', height: '22vw'}"
+    [transitionOptions]="'200ms'"
+    [modal]="true"
+    (onHide)="this.limpiarModal()"
+>
+    <div class="text-center dialog-body-left">
+        <!-- CUERPO-->
+
+        <div class="grid">
+            <!-- COLUMNA IZQUIERDA -->
+            <div class="col-6">
+                <div class="grid">
+                    <div class="col-4 flex align-items-center justify-content-center">
+                        <h5 class="mb-0">Codigo Proveedor:</h5>
+                    </div>
+                    <div class="col-8">
+                        <p-dropdown
+                            [style]="{width: '100%'}"
+                            [options]="proveedores"
+                            [filter]="true"
+                            filterBy="proveedor"
+                            [showClear]="true"
+                            placeholder="Seleccione Proveedor"
+
+                            [virtualScroll]="true"
+                            [virtualScrollItemSize]="38"
+                            
+                            optionLabel="proveedor"
+                            appendTo="body"
+                            (onChange)="infoProveedor()"
+                            [(ngModel)]="selectedProveedor"
+                        ></p-dropdown>
+                    </div>
+                </div>
+
+                <div class="grid">
+                    <div class="col-4 flex align-items-center justify-content-center">
+                        <h5>Numero Pedido:</h5>
+                    </div>
+                    <div class="col-8">
+                        <input type="text" pInputText [(ngModel)]="numeropedido" [style]="{width: '100%'}"/>
+                    </div>
+                </div>
+
+                <div class="grid">
+                    <div class="col-4 flex align-items-center justify-content-center">
+                        <h5>Estado Pedido:</h5>
+                    </div>
+                    <div class="col-8">
+                        <p-dropdown
+                        [style]="{width: '100%'}"
+                        [options]="estados"
+                        [filter]="true"
+                        filterBy="descripcionCorta"
+                        [showClear]="true"
+                        placeholder="Seleccione Estado"
+                        optionLabel="descripcionCorta"
+                        [(ngModel)]="selectedEstado"
+                        appendTo="body"
+                    ></p-dropdown>
+                    </div>
+                </div>
+                                   
+            </div>
+            <!-- COLUMNA DERECHA -->
+            <div class="col-6">
+
+                <div class="grid">
+                    <div class="col-4 flex align-items-center justify-content-center">
+                        <h5>Dirección:</h5>
+                    </div>
+                    <div class="col-8">
+                        <input type="text" 
+                        pInputText 
+                        [(ngModel)]="direccion" 
+                        [disabled]="true" 
+                        [style]="{width: '100%'}"
+                        />
+                    </div>
+                </div>
+                <div class="grid">
+                    <div class="col-4 flex align-items-center justify-content-center">
+                        <h5>Pais:</h5>
+                    </div>
+                    <div class="col-8">
+                        <input type="text" 
+                        pInputText 
+                        [(ngModel)]="pais" 
+                        [disabled]="true" 
+                        [style]="{width: '100%'}"
+                        />
+                    </div>
+                </div>
+
+                <div class="grid">
+                    <div class="col-4">
+                        <h5>Teléfono:</h5>
+                    </div>
+                    <div class="col-8">
+                        <input type="text" 
+                        pInputText 
+                        [(ngModel)]="telefono" 
+                        [disabled]="true"
+                        [style]="{width: '100%'}"
+                        />
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+       
+        <div class="text-center">
+            <button  class="padd-button" type="button" pButton autofocus
+            (click)="createPedido()"
+            >CREAR</button>
+        </div>
+
+        <!-- FIN CUERPO -->
+    </div>
+</p-dialog>

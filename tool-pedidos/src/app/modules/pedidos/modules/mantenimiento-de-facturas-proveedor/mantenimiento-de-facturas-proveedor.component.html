@@ -1,0 +1,606 @@
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="default" color="#fff" type="pacman" [fullScreen]="true">
+    <p class="spinner"> {{ txtSpinner }} </p>
+</ngx-spinner>
+
+<div class="col-12 flex flex-column m-0 p-0">
+    <div class="col-12 m-0 p-0">
+        <h1 class="col-12 m-0 p-0">Mantenimiento de Factura Proveedor</h1>
+    </div>
+
+    <div class="col-12 flex flex-row justify-content-center align-items-center m-0 p-0">
+        <div class="col-12 justify-content-center align-items-center m-0">
+
+            <!-- #region --> <!-- * Inputs y Fechas -->
+            <div class="col-12 flex flex-row justify-content-center align-items-start m-0 mb-3 p-0">
+                <div class="col-5 flex flex-column justify-content-start align-items-center m-0 p-0">
+                    <div class="col-12 flex flex-row justify-content-start align-items-center m-0 mb-3 p-0">
+                        <form class="col-6 flex flex-column justify-content-center align-items-end m-0 p-0" *ngIf="proveedorForm" [formGroup]="proveedorForm">
+                            <span class="m-0 mb-2 p-0 text-xs">Pulse <b>F2</b> para panel de búsqueda</span>
+
+                            <div class="col-12 m-0 p-0 flex flex-row">
+                                <span class="col-5 flex flex-row justify-content-start align-items-center m-0 p-0 font-bold">Proveedor:</span>
+
+                                <input #codProveedor formControlName="codproveedor" type="text" pInputText class="p-inputtext-sm col-7 m-0" style="font-size: 14px !important;" pattern="^[a-zA-Z]+$|^[0-9]+$|^[a-zA-Z0-9]+$|^[a-zA-Z0-9 \-]+$" (keyup.enter)="obtenerProveedor()" (keydown.tab)="obtenerProveedor()" pAutoFocus [autofocus]="true">
+                            </div>
+                        </form>
+
+                        <span class="col-6 flex flex-row justify-content-start align-items-center m-0 ml-3 p-0">{{ ( proveedor ) ? proveedor['nombre']: '' }}</span>
+                    </div>
+                    
+                    <!-- ! DROPBOX con Filter -->
+                    <div class="col-12 flex flex-row justify-content-start align-items-center m-0 p-0">
+                        <form class="col-6 m-0 p-0" *ngIf="documentoFacturaForm" [formGroup]="documentoFacturaForm">
+                            <div class="col-12 flex flex-row justify-content-center align-items-center m-0 p-0 p-fluid">
+                                <span class="col-5 flex flex-row justify-content-start align-items-center m-0 p-0 font-bold">Número Pedido: </span>
+                                
+                                <p-dropdown class="col-7 m-0 p-0" #numDocumento formControlName="numDocumento" [options]="proveedor?.facturasprov ? proveedor?.facturasprov || [] :[]" [placeholder]=" placeholderdocumento " emptyMessage="No hay documentos." optionLabel="numerodocumento" optionValue="numerodocumento" filterBy="numerodocumento" [filter]="true" [showClear]="false" (keyup.enter)="obtenerDocumentoFactura()" (keydown.tab)="obtenerDocumentoFactura()" (onChange)="obtenerDocumentoFactura()">
+                                    <ng-template pTemplate="selectedItem">
+                                        <div *ngIf="documentoFacturaForm.value['numDocumento'] != '' ">
+                                            <div>{{ documentoFacturaForm.value['numDocumento'] }}</div>
+                                        </div>
+                                    </ng-template>
+                                    
+                                    <ng-template let-documento pTemplate="item">
+                                        <div>
+                                            <div>
+                                                <span> {{ documento?.numerodocumento }} </span> &nbsp; 
+
+                                                <span class="p-1 border-round" [ngClass]="getClassEstado( documento.estado )">
+                                                    {{ documento?.descripcion_corta }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- ! DROPBOX con Filter -->
+                </div>
+
+                <div class="col-7 flex flex-row justify-content-center align-items-center m-0 p-0">
+                    <div class="col-12 flex flex-row flex-wrap justify-content-end align-items-center m-0 p-0" style="align-items: flex-end;">
+                        <div class="col-4 flex flex-row justify-content-center align-items-center m-0 mb-2 p-1">
+                            <span class="col-8 text-base text-left m-0 p-0 font-bold">Fecha Creación: </span>
+
+                            <div class="col-4 flex m-0 p-0 p-fluid">
+                                <input class="col-12" type="text" pInputText class="p-inputtext-sm" [value]="facturaProveedor?.fechacreacion" [readOnly]="true" disabled="true">
+                            </div>
+                        </div>
+
+                        <div class="col-4 flex flex-row justify-content-center align-items-center m-0 mb-2 p-1">
+                            <span class="col-8 text-base text-left m-0 p-0 font-bold">Moneda Proveedor: </span>
+
+                            <div class="col-4 flex m-0 p-0 p-fluid">
+                                <input class="col-12" type="text" pInputText class="p-inputtext-sm" [value]="facturaProveedor?.descripcionmoneda" [readOnly]="true" disabled="true">
+                            </div>
+                        </div>
+
+                        <div class="col-4 flex flex-row justify-content-center align-items-center m-0 mb-2 p-1">
+                            <span class="col-8 text-base text-left m-0 p-0 font-bold">País del Proveedor: </span>
+
+                            <div class="col-4 flex m-0 p-0 p-fluid">
+                                <input class="col-12" type="text" pInputText class="p-inputtext-sm" [value]="facturaProveedor?.paisproveedor" [readOnly]="true" disabled="true">
+                            </div>
+                        </div>
+                        
+                        <div class="col-4 flex flex-row justify-content-center align-items-center m-0 mb-2 p-1">
+                            <span class="col-8 text-base text-left m-0 p-0 font-bold">País del Proveedor: </span>
+
+                            <div class="col-4 flex m-0 p-0 p-fluid" pTooltip="{{ facturaProveedor?.fechaemision || 'Sin fecha emisión' }}" (click)="abrirModalActualizarFechasEmisionVencimiento()">
+                                <input class="col-12" type="text" pInputText class="p-inputtext-sm" [value]="facturaProveedor?.fechaemision || 'Sin fecha emisión'" [readOnly]="true" disabled="true">
+                            </div>
+                        </div>
+
+                        <div class="col-4 flex flex-row justify-content-center align-items-center m-0 mb-2 p-1">
+                            <span class="col-8 text-base text-left m-0 p-0 font-bold">País del Proveedor: </span>
+
+                            <div class="col-4 flex m-0 p-0 p-fluid" pTooltip="{{ facturaProveedor?.fechavencimiento || 'Sin fecha vencimiento' }}" (click)="abrirModalActualizarFechasEmisionVencimiento()">
+                                <input class="col-12" type="text" pInputText class="p-inputtext-sm" [value]="facturaProveedor?.fechavencimiento || 'Sin fecha vencimiento'" [readOnly]="true" disabled="true">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+            <!-- #endregion --> <!-- * Inputs y Fechas -->
+            
+            <!-- #region --> <!-- * Estado y botones -->
+            <div class="col-12 flex flex-row justify-content-between align-items-start m-0 mb-3 p-0">
+                <div class="col-4 flex flex-column justify-content-center align-items-start m-0 p-0" >
+                    <div class="col-12 flex flex-row justify-content-start align-items-center m-0 mb-3 p-0">
+                        <span class="col-4 flex text-base text-left m-0 p-0 font-bold">Estado Actual: </span>
+                        
+                        <span class="col-8 flex text-2xl text-left m-0 p-0 font-bold text-primary">{{ estadosFacturaProv?.estadoactualdesc }}</span>
+                    </div>
+
+                    <div class="col-12 flex flex-row justify-content-start align-items-center m-0 p-0">
+                        <span class="col-4 flex text-base text-left m-0 p-0 font-bold">Cambiar estado a: </span>
+                        
+                        <p-button styleClass="p-button-sm p-button-outlined" [pTooltip]="'Actualizar el estado a: ' + estadosFacturaProv?.proximoestadodesc " *ngIf="estadosFacturaProv?.proximoestadodesc" (click)="actualizarEstadoFactura()" [disabled]="!estadosFacturaProv?.proximoestadodesc">
+                            <span class="p-ml-2 p-text-bold" style="font-size: 1rem; padding: 0px !important;">
+                                {{ estadosFacturaProv?.proximoestadodesc }}
+                            </span>
+                        </p-button>
+                    </div>
+                </div>
+
+                <div class="col-4 flex flex-row justify-content-end align-items-center m-0 p-0">
+                    <button pButton pRipple type="button" icon="pi pi-refresh" pTooltip="Recargar" class="p-button-rounded p-button-info ml-1" (click)="recargarDetalleFacturaProveedor()" [disabled]="facturaProveedorDetalle.length <= 0"></button>
+                    
+                    <button pButton pRipple type="button" icon="pi pi-pencil" pTooltip="Habilitar columnas" class="p-button-rounded p-button-help ml-1" (click)="habilitarDeshabilitarColumnas(true)" *ngIf="!habilitarColumnas" [disabled]="facturaProveedorDetalle.length <= 0"></button>
+                    
+                    <button pButton pRipple type="button" icon="pi pi-times" pTooltip="Deshabilitar columnas" class="p-button-rounded p-button-help ml-1" (click)="habilitarDeshabilitarColumnas(false)" *ngIf="habilitarColumnas" [disabled]="facturaProveedorDetalle.length <= 0"></button>
+
+                    <!-- ? Esta seria agregando la funcion con los datos arancelarios -->
+                    <button pButton pRipple type="button" icon="pi pi-file-excel" pTooltip="Exportar Factura" class="p-button-rounded p-button-success ml-1" (click)="exportarDetalleFacturaProveedor()" [disabled]="facturaProveedorDetalle.length <= 0"></button>
+                </div>
+            </div>
+            <!-- #endregion --> <!-- * Estado y botones -->
+            
+            <!-- #region --> <!-- * Table del Detalle del pedido -->
+            <div class="col-12 flex flex-column justify-content-center align-items-center m-0 mb-3 p-0">
+                <p-table class="col-12 m-0 p-0" [value]="facturaProveedorDetalle" dataKey="facturaproveedordetalleid" [scrollable]="true" scrollHeight="36vh" columnResizeMode="expand" [resizableColumns]="true" styleClass="p-datatable-gridlines p-datatable-sm" [(selection)]="productosSeleccionados" [globalFilterFields]="['oem', 'codigoproducto', 'descripcion']">
+                    <ng-template pTemplate="colgroup">
+                        <colgroup>
+                            <col style="width: 5%;">
+
+                            <col style="width: 6%;">
+
+                            <col style="width: 11%;">
+
+                            <col style="width: 23%;">
+
+                            <col style="width: 6%;">
+
+                            <col style="width: 6%;">
+
+                            <col style="width: 7%;">
+
+                            <col style="width: 7%;">
+
+                            <col style="width: 10%;">
+
+                            <col style="width: 4%;">
+                        </colgroup>
+                    </ng-template>
+
+                    <ng-template pTemplate="header" >
+                        <tr [ngClass]="{ fontSize: true }">
+                            <td class="bg-primary p-2"></td>
+
+                            <td colspan="5" class="text-center text-sm bg-primary p-2"><b>Producto</b></td>
+
+                            <td colspan="3" class="text-center text-sm bg-primary p-2"><b>Valores</b></td>
+
+                            <td colspan="1" class="bg-primary p-2"></td>
+                        </tr>
+
+                        <tr [ngClass]="{ fontSize: true }">
+                            <th class="bg-primary"></th>
+
+                            <th pResizableColumn pSortableColumn="oem" class="text-sm bg-primary">
+                                OEM
+
+                                <p-sortIcon field="oem"></p-sortIcon>
+
+                                <p-columnFilter type="text" field="oem" display="menu" [showAddButton]="false" matchMode="contains" [showMatchModes]="false"></p-columnFilter>
+                            </th>
+
+                            <th pResizableColumn pSortableColumn="codigoproducto" class="text-sm bg-primary">
+                                Código Producto
+
+                                <p-sortIcon field="codigoproducto"></p-sortIcon>
+                                
+                                <p-columnFilter type="text" field="codigoproducto" display="menu" [showAddButton]="false" matchMode="contains" [showMatchModes]="false"></p-columnFilter>
+                            </th>
+
+                            <th pResizableColumn pSortableColumn="descripcion" class="text-sm bg-primary">
+                                Descripción
+
+                                <p-sortIcon field="descripcion"></p-sortIcon>
+                                
+                                <p-columnFilter type="text" field="descripcion" display="menu" [showAddButton]="false" matchMode="contains" [showMatchModes]="false"></p-columnFilter>
+                            </th>
+
+                            <th pResizableColumn class="text-center text-sm bg-primary">
+                                Origen
+                            </th>
+
+                            <th pResizableColumn class="text-center text-sm bg-primary" pSortableColumn="marca">
+                                Marca
+                                
+                                <p-sortIcon field="marca"></p-sortIcon>
+                            </th>
+                            
+                            <th pResizableColumn class="text-center" pSortableColumn="cantidad" class="text-sm bg-primary">
+                                Cantidad
+                                
+                                <p-sortIcon field="cantidad"></p-sortIcon>     <!-- ? Columna para el campo "cantidad" que es lo confirmado -->
+                            </th>     
+                            
+                            <th pResizableColumn class="text-center text-sm bg-primary" pSortableColumn="precio">
+                                Precio
+
+                                <p-sortIcon field="precio"></p-sortIcon>       <!-- ? Columna para el campo "precio" que es lo confirmado -->
+                            </th>
+
+                            <th pResizableColumn class="text-center" pSortableColumn="costoproducto" class="text-sm bg-primary">
+                                Costo Producto
+
+                                <p-sortIcon field="costoproducto"></p-sortIcon>
+                            </th>
+                            
+                            <th pResizableColumn class="text-center text-sm bg-primary">
+                                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                            </th>
+                        </tr>
+                    </ng-template>
+                    
+                    <ng-template pTemplate="body" let-facturaDetalle let-rowData let-expanded="expanded">
+                        <tr [ngClass]="{ fontSize: true }">
+                            <td class="text-center text-sm">
+                                <button type="button" pButton pRipple pTooltip="Ver desglose" [pRowToggler]="facturaDetalle" class="p-button-text p-button-rounded p-button-plain"  style="width: 30px !important; height: 30px !important;"[icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
+                            </td>
+
+                            <td class="text-sm">{{ facturaDetalle.oem }}</td>
+                            
+                            <td class="text-sm">{{ facturaDetalle.codigoproducto }}</td>
+                            
+                            <td class="text-sm">{{ facturaDetalle.descripcion }}</td>
+
+                            <td class="text-sm" pEditableColumn class="text-center">
+                                <p-cellEditor class="text-sm" *ngIf="habilitarColumnas">
+                                    <ng-template class="text-sm" pTemplate="input">
+                                        <p-dropdown [options]="listaPaisOrigenProductos" [(ngModel)]="facturaDetalle.paisorigenid" optionLabel="descripcion" optionValue="descripcion" [filter]="true" filterBy="descripcion" [showClear]="true" placeholder="Selec. origen" [style]="{'font-size': '12px !important'}" appendTo="body" class="dropdown-width" [editable]="true">
+                                            <ng-template pTemplate="selectedItem">
+                                                <div class=""  *ngIf="facturaDetalle?.paisorigenid">
+                                                    <div class="text-sm">{{facturaDetalle?.paisorigenid}}</div>
+                                                </div>
+                                            </ng-template>
+                                            <ng-template let-pais pTemplate="item">
+                                                <div class="">
+                                                    <div class="text-sm">{{pais.descripcion}}</div>
+                                                </div>
+                                            </ng-template>
+                                        </p-dropdown>
+                                    </ng-template>
+
+                                    <ng-template class="text-sm" pTemplate="output">
+                                        {{ facturaDetalle?.paisorigenid }}
+                                    </ng-template>
+                                </p-cellEditor>
+
+                                <span class="text-sm" *ngIf="!habilitarColumnas"> {{ facturaDetalle?.paisorigenid }} </span>
+                            </td>
+
+                            <td class="text-sm" pEditableColumn class="text-center">
+                                <p-cellEditor class="text-sm" *ngIf="habilitarColumnas">
+                                    <ng-template class="text-sm" pTemplate="input">
+                                        <p-dropdown [options]="listaMarcasProductos" [(ngModel)]="facturaDetalle.marca" optionLabel="marca" optionValue="marca" [filter]="true" filterBy="marca" [showClear]="true" placeholder="Selec. marca" [style]="{'font-size': '12px !important' }" appendTo="body" class="dropdown-width" [editable]="true">
+                                            <ng-template pTemplate="selectedItem">
+                                                <div class=""  *ngIf="facturaDetalle?.marca">
+                                                    <div class="text-sm">{{facturaDetalle?.marca}}</div>
+                                                </div>
+                                            </ng-template>
+
+                                            <ng-template let-marca pTemplate="item">
+                                                <div class="">
+                                                    <div class="text-sm">{{marca.marca}}</div>
+                                                </div>
+                                            </ng-template>
+                                        </p-dropdown>
+                                    </ng-template>
+
+                                    <ng-template class="text-sm" pTemplate="output">
+                                        {{ facturaDetalle?.marca }}
+                                    </ng-template>
+                                </p-cellEditor>
+
+                                <span class="text-sm" *ngIf="!habilitarColumnas"> {{ facturaDetalle?.marca }} </span>
+                            </td>
+
+                            <td class="text-right text-sm">{{ facturaDetalle?.cantidad }}</td>
+
+                            <td class="text-sm" pEditableColumn [pTooltip]="'Precio del producto ' + facturaDetalle.codigoproducto" class="text-right">
+                                <p-cellEditor class="text-sm" *ngIf="habilitarColumnas">
+                                    <ng-template pTemplate="input">
+                                        <input class="text-sm" pInputText type="text" [style]="{width: '100%'}" [(ngModel)]="facturaDetalle.precio" required>
+                                    </ng-template>
+
+                                    <ng-template class="text-sm" pTemplate="output">
+                                        {{ facturaDetalle?.precio}}
+                                    </ng-template>
+                                </p-cellEditor>
+                                
+                                <span class="text-sm" *ngIf="!habilitarColumnas">{{ facturaDetalle?.precio }}</span>
+                            </td>
+                            
+                            <td class="text-sm" pEditableColumn [pTooltip]="'Costo del producto ' + facturaDetalle.codigoproducto" class="text-right">
+                                <p-cellEditor class="text-sm" *ngIf="habilitarColumnas">
+                                    <ng-template pTemplate="input">
+                                        <input class="text-sm" pInputText type="text" [style]="{width: '100%'}" [(ngModel)]="facturaDetalle.costoproducto" required>
+                                    </ng-template>
+
+                                    <ng-template class="text-sm" pTemplate="output">
+                                        {{ facturaDetalle?.costoproducto}}
+                                    </ng-template>
+                                </p-cellEditor>
+                                
+                                <span class="text-sm" *ngIf="!habilitarColumnas">{{ facturaDetalle?.costoproducto }}</span>
+                            </td>
+                            
+                            <td class="text-center"> 
+                                <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+                            </td>
+                        </tr>
+                    </ng-template>
+                    
+                    <ng-template pTemplate="rowexpansion" let-facturaDetalle>
+                        <tr [ngClass]="{ fontSize: true }">
+                            <td colspan="2"></td>
+
+                            <td colspan="5" class="mt-2">
+                                <div class="p-p-3">
+                                    <p-table [value]="facturaDetalle.desglose" [dataKey]="facturaDetalle.facturaproveedordetalleid" [scrollable]="true" scrollHeight="200px">
+                                        <ng-template pTemplate="colgroup">
+                                            <colgroup>
+                                                <col style="width: 10%;">
+
+                                                <col>
+
+                                                <col>
+
+                                                <col>
+
+                                                <col style="width: 10%;">
+
+                                                <col style="width: 10%;">
+                                            </colgroup>
+                                        </ng-template>
+
+                                        <ng-template pTemplate="header">
+                                            <tr [ngClass]="{ fontSize: true }">
+                                                <th class="text-center text-sm bg-primary" >Pedido</th>
+
+                                                <th class="text-center text-sm bg-primary">Proveedor</th>
+
+                                                <th class="text-center text-sm bg-primary">OEM</th>
+
+                                                <th class="text-center text-sm bg-primary">Código Producto</th>
+
+                                                <th class="text-center text-sm bg-primary">Cantidad</th>
+
+                                                <th class="text-center text-sm bg-primary">Precio</th>
+                                            </tr>
+                                        </ng-template>
+
+                                        <ng-template pTemplate="body" let-desglose>
+                                            <tr [ngClass]="{ fontSize: true }">
+                                                <td class="text-sm">{{desglose.numeropedido}}</td>
+
+                                                <td class="text-sm">{{desglose.codigoproveedor}}</td>
+
+                                                <td class="text-sm">{{desglose.oem}}</td>
+
+                                                <td class="text-sm">{{desglose.codigoproducto}}</td>
+
+                                                <td class="text-right text-sm">{{desglose.cantidad}}</td>
+
+                                                <td class="text-right text-sm">{{desglose.precio}}</td>
+                                            </tr>
+                                        </ng-template>
+
+                                        <ng-template pTemplate="emptymessage">
+                                            <tr>
+                                                <td colspan="6">There are no order for this product yet.</td>
+                                            </tr>
+                                        </ng-template>
+                                    </p-table>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+                
+                <!-- #region --> <!-- * Calculos -->
+                <p-table class="col-12 m-0 p-0" [value]="[]" styleClass="p-datatable-gridlines p-datatable-sm">
+                    <ng-template pTemplate="colgroup">
+                        <colgroup>
+                            <col class="text-sm bg-primary">
+
+                            <col class="text-sm bg-primary">
+
+                            <col class="text-sm bg-primary" style="width: 2%;">
+
+                            <col class="text-sm bg-primary">
+
+                            <col class="text-sm bg-primary">
+
+                            <col class="text-sm bg-primary" style="width: 2%;">
+
+                            <col class="text-sm bg-primary">
+
+                            <col class="text-sm bg-primary">
+
+                            <col class="text-sm bg-primary" style="width: 2%;">
+
+                            <col class="text-sm bg-primary">
+
+                            <col class="text-sm bg-primary">
+
+                            <col class="text-sm bg-primary" style="width: 2%;">
+
+                            <col class="text-sm bg-primary">
+
+                            <col class="text-sm bg-primary">
+                        </colgroup>
+                    </ng-template>
+
+                    <ng-template pTemplate="footer">
+                        <tr>
+                            <td class="text-sm" colspan="14"></td>
+                        </tr>
+                        
+                        <tr [ngClass]="{ fontSize: true }">
+                            <td class="text-right text-sm bg-primary">Subtotal: </td>
+                            
+                            <td class="text-sm bg-primary" pTooltip="Valor de Subtotal">{{ ( facturaProveedor?.subtotal ) ? facturaProveedor?.subtotal : 0 }}</td>
+                            
+                            <td class="text-sm bg-primary"></td>
+
+                            <td class="text-right text-sm bg-primary">Impuesto: </td>
+                            
+                            <td class="text-sm bg-primary" pEditableColumn pTooltip="Porcentaje del Impuesto">
+                                <p-cellEditor class="text-sm" *ngIf="habilitarColumnas">
+                                    <ng-template pTemplate="input">
+                                        <input class="text-sm" *ngIf="facturaProveedor" pInputText type="text" [style]="{width: '100%'}" [(ngModel)]="facturaProveedor.impuesto" required>
+                                    </ng-template>
+                                    
+                                    <ng-template class="text-sm" pTemplate="output">
+                                        {{this.facturaProveedor?.impuesto}}
+                                    </ng-template>
+                                </p-cellEditor>
+                                
+                                <span class="text-sm" *ngIf="!habilitarColumnas">{{facturaProveedor?.impuesto}}</span>
+                            </td>
+                            
+                            <td class="text-sm bg-primary"></td>
+                            
+                            <td class="text-right text-sm bg-primary">Descuento: </td>
+                            
+                            <td class="text-sm bg-primary" pEditableColumn pTooltip="Porcentaje del Descuento">
+                                <p-cellEditor class="text-sm bg-primary" *ngIf="habilitarColumnas">
+                                    <ng-template pTemplate="input">
+                                        <input class="text-sm" *ngIf="facturaProveedor" pInputText type="text" [style]="{width: '100%'}" [(ngModel)]="facturaProveedor.descuento" required>
+                                    </ng-template>
+                                    
+                                    <ng-template class="text-sm" pTemplate="output">
+                                        {{this.facturaProveedor?.descuento}}
+                                    </ng-template>
+                                </p-cellEditor>
+                                
+                                <span class="text-sm bg-primary" *ngIf="!habilitarColumnas">{{this.facturaProveedor?.descuento}}</span>
+                            </td>
+                            
+                            <td class="text-right text-sm bg-primary">Flete: </td>
+                            
+                            <td pEditableColumn pTooltip="Valor del Flete" class="text-sm bg-primary">
+                                <p-cellEditor class="text-sm" *ngIf="habilitarColumnas">
+                                    <ng-template pTemplate="input">
+                                        <input class="text-sm" *ngIf="facturaProveedor" pInputText type="text" [style]="{width: '100%'}" [(ngModel)]="facturaProveedor.flete" required>
+                                    </ng-template>
+                                    
+                                    <ng-template class="text-sm" pTemplate="output">
+                                        {{this.facturaProveedor?.flete}}
+                                    </ng-template>
+                                </p-cellEditor>
+                                
+                                <span class="text-sm bg-primary" *ngIf="!habilitarColumnas">{{facturaProveedor?.flete}}</span>
+                            </td>
+
+                            <td class="text-right text-sm bg-primary">Cantidad: </td>
+                            
+                            <td class="text-sm bg-primary" pTooltip="Cantidad total de productos">{{ totalCantidadDetallePedido }}</td>
+                            
+                            <td class="text-sm bg-primary"></td>
+                            
+                            <td class="text-right text-sm bg-primary">Total: </td>
+                            
+                            <td class="text-sm bg-primary" pTooltip="Valor Total">
+                                {{ ( facturaProveedor?.total ) ? facturaProveedor?.total : 0 }}
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+                <!-- #endregion --> <!-- * Calculos -->
+            </div> 
+            <!-- #endregion --> <!-- * Table del Detalle del pedido -->
+            
+            <!-- #region --> <!-- Botones inferiores -->
+            <div class="col-12 flex flex-row justify-content-center align-items m-0 p-0">
+                <div class="col-12 flex flex-row justify-content-end align-items m-0 p-0">                    
+                    <button pButton pRipple type="button" label="Borrar" class="p-button-outlined p-button-rounded btn-color-borrar ml-1 mt-2" icon="pi pi-trash" iconPos="right" (click)="borrarRegistros()" [disabled]="productosSeleccionados.length == 0"></button>
+                    
+                    <button pButton pRipple type="button" label="Nuevo" class="p-button-outlined p-button-rounded btn-color-nuevo ml-1 mt-2" icon="pi pi-inbox" iconPos="right" (click)="buscarNuevoDocumento()"></button>
+
+                    <button pButton pRipple type="button" label="Guardar" class="p-button-outlined p-button-rounded btn-color-guardar ml-1 mt-2" icon="pi pi-save"iconPos="right" (click)="actualizarRegistros()" ></button>
+                </div>
+            </div>  
+            <!-- #endregion --> <!-- Botones inferiores -->
+         </div>
+    </div>
+</div>
+
+<!-- * Modal establecer una nueva fecha de emision y vencimiento al documento seleccionado -->
+<p-dialog [(visible)]="mostrarModalActualizarFechas" [style]="{width: '450px'}" header="Fechas de emisión y vencimiento del documento" [modal]="true" styleClass="p-fluid" *ngIf="facturaProveedor" (onHide)="cerrarModalActualizarFechasEmisionVencimiento()">
+    <p class="text-justify text-base">
+        Ingrese la nueva fecha de emisión y vencimiento para el documento <b>{{ facturaProveedor.numerodocumento }}.</b>
+    </p>
+
+    <ng-template pTemplate="content">
+        <div class="col-12 flex flex-column justify-content-center align-items-start m-0 mb-3 p-0 p-field">
+            <label class="col-12 m-0 mb-2 p-0 text-base font-bold" for="documento_fechacreacion">Fecha emisión de documento: </label>
+
+            <div class="col-12 flex flex-row justify-content-center align-items-center p-fluid m-0 p-0">
+                <p-calendar class="col-12 m-0 p-0" id="documento_fechacreacion" appendTo="body" [(ngModel)]="nuevaFechaEmision" [showIcon]="true" [required]="true" [maxDate]="fechaActual" [readonlyInput]="true"></p-calendar>
+            </div>
+        </div>
+
+        <div class="col-12 flex flex-column justify-content-center align-items-start m-0 mb-3 p-0 p-field">
+            <label class="col-12 flex flex-row m-0 mb-2 p-0 text-base font-bold" for="documento_fechavencimiento">Fecha vencimiento de documento: <p class="font-normal ml-2">(Opc.)</p></label>
+
+            <div class="col-12 flex flex-row justify-content-center align-items-center p-fluid m-0 p-0">
+                <p-calendar class="col-12 m-0 p-0" id="documento_fechavencimiento" appendTo="body" [(ngModel)]="nuevaFechaVencimiento" [showIcon]="true" [required]="true" [minDate]="fechaActual" [readonlyInput]="true"></p-calendar>
+            </div>
+        </div>
+    </ng-template>
+    
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-outlined p-button-danger" (click)="cerrarModalActualizarFechasEmisionVencimiento()"></button>
+        
+        <button pButton pRipple label="Agregar" icon="pi pi-check" class="p-button-outlined p-button-info" (click)="actualizarFechaEmisionVencimiento()"></button>
+    </ng-template>
+</p-dialog>
+
+<!-- * Modal buscar y elegir un proveedor desde una tabla -->
+<p-dialog [(visible)]="mostrarModalBuscarProveedor" [style]="{width: '600px'}" header="Busqueda de proveedor" [modal]="true" styleClass="p-fluid" *ngIf="mostrarModalBuscarProveedor" (onHide)="cancelarBusquedaProveedor()">
+    <p class="text-justify text-base">Busque y seleccione el proveedor del cual desea obtener los pedidos.</p>
+
+    <div class="col-12 flex flex-row flex-wrap justify-content-start align-items-stretch m-0 p-0">
+        <p-table #proveedor class="col-12 m-0 p-0" [value]="busquedaProveedorLista" [scrollable]="true" scrollHeight="300px" selectionMode="single" [(selection)]="busquedaProveedorSeleccionado" dataKey="codigoproveedor" [paginator]="true" [rows]="25" [globalFilterFields]="['codigoproveedor', 'nombre']">
+            <ng-template pTemplate="caption">
+                <div class="col-12 flex flex-row justify-content-end m-0 p-0">
+                    <div class="col-6 flex m-0 p-0 p-fluid">
+                        <span class="p-input-icon-left ml-auto">
+                            <i class="pi pi-search"></i>
+    
+                            <input pInputText type="text" (input)="proveedor.filterGlobal(getValueOfEvent_busquedaProveedor($event), 'contains')" placeholder="Código o el nombre del proveedor" pAutoFocus [autofocus]="true"/>
+                        </span>
+                    </div>
+                </div>
+            </ng-template>
+            
+            <ng-template pTemplate="header">
+                <tr>
+                    <th class="col-1 bg-primary text-white">Cod.</th>
+
+                    <th class="col-11 bg-primary text-white">Nombre</th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-proveedor>
+                <tr [pSelectableRow]="proveedor" class="{{ (proveedor.codigoproveedor === busquedaProveedorSeleccionado?.codigoproveedor) ? 'bg-blue-100' : '' }}">
+                    <td class="col-1 m-0 pt-2 pb-2">{{ proveedor.codigoproveedor }}</td>
+
+                    <td class="col-11 m-0 pt-2 pb-2">{{ proveedor.nombre }}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+    
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-outlined p-button-danger" (click)="cancelarBusquedaProveedor()"></button>
+        
+        <button pButton pRipple label="Importar" icon="pi pi-check" class="p-button-outlined p-button-info" (click)="seleccionarBusquedaProveedor()" *ngIf="busquedaProveedorSeleccionado"></button>
+    </ng-template>
+</p-dialog>

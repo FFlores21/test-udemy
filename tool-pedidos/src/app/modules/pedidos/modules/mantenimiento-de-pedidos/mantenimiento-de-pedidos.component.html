@@ -1,0 +1,839 @@
+<ngx-spinner bdColor = "rgba(0, 0, 0, 0.8)" size = "default"  color = "#fff" type = "pacman" [fullScreen] = "true">
+    <p class="spinner"> {{ txtSpinner }} </p>
+</ngx-spinner>
+
+<div class="col-12 flex flex-column m-0 p-0" >
+    <div class="col-12 m-0 p-0">
+        <h1 class="col-12 m-0 p-0">Mantenimiento de Pedidos</h1>
+    </div>
+    
+    <div class="col-12 flex flex-row justify-content-center align-items-center m-0 p-0">
+        <div class="col-12 justify-content-center align-items-center m-0">
+            
+            <!-- #region --> <!-- * Inputs y Fechas -->
+            <div class="col-12 flex flex-row justify-content-center align-items-start m-0 mb-3 p-0">
+                <div class="col-5 flex flex-column justify-content-start align-items-center m-0 p-0">
+                    <div class="col-12 flex flex-row justify-content-start align-items-end m-0 mb-3 p-0">
+                        <form class="col-6 flex flex-column justify-content-center align-items-end m-0 p-0" *ngIf="proveedorForm" [formGroup]="proveedorForm">
+                            <span class="m-0 mb-2 p-0 text-xs">Pulse <b>F2</b> para panel de búsqueda</span>
+
+                            <div class="col-12 m-0 p-0 flex flex-row">
+                                <span class="col-5 flex flex-row justify-content-start align-items-center m-0 p-0 font-bold">Proveedor:</span>
+                                
+                                <input #codProveedor formControlName="codproveedor" type="text" pInputText class="p-inputtext-sm col-7 m-0" style="font-size: 14px !important;" pattern="^[a-zA-Z]+$|^[0-9]+$|^[a-zA-Z0-9]+$|^[a-zA-Z0-9 \-]+$" (keyup.enter)="obtenerProveedor()" (keydown.tab)="obtenerProveedor()" pAutoFocus [autofocus]="true">
+                            </div>
+                        </form>
+                        
+                        <span class="col-6 flex flex-row justify-content-start align-items-center m-0 ml-3">{{ ( proveedor ) ? proveedor['nombre']: '' }}</span>
+                    </div>
+                    
+                    <!-- ! DROPBOX con Filter -->
+                    <div class="col-12 flex flex-row justify-content-start align-items-center m-0 p-0">
+                        <form class="col-6 m-0 p-0" *ngIf="pedidoForm" [formGroup]="pedidoForm">
+                            <div class="col-12 flex flex-row justify-content-center align-items-center m-0 p-0 p-fluid">
+                                <span class="col-5 flex flex-row justify-content-start align-items-center m-0 p-0 font-bold">Número Pedido: </span>
+
+                                <p-dropdown class="col-7 m-0 p-0" #numPedido formControlName="numPedido" [options]="(proveedor?.pedidosprov) ? proveedor?.pedidosprov || [] : []" [placeholder]="placeholderpedido" emptyMessage="No hay pedidos." optionLabel="numeropedido"  optionValue="numeropedido" filterBy="numeropedido" [filter]="true" [showClear]="false" (keyup.enter)="obtenerPedido()" (keydown.tab)="obtenerPedido()" (onChange)="obtenerPedido()">
+                                    <ng-template pTemplate="selectedItem">
+                                        <div *ngIf="pedidoForm.value['numPedido'] != '' ">
+                                            <div>{{ pedidoForm.value['numPedido'] }}</div>
+                                        </div>
+                                    </ng-template>
+                                    
+                                    <ng-template let-pedido pTemplate="item" >
+                                        <div>
+                                            <span> {{ pedido.numeropedido }} </span>  &nbsp;
+                                            
+                                            <span class="p-1 border-round" [ngClass]="getClassEstado( pedido.estado )">
+                                                {{ pedido.descripcion_corta }}
+                                            </span>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </div>
+                        </form>
+                        
+                        <!-- Estos botones se mostraran solo si el proveedor ingresado, tiene numeros de pedido para seleccionar -->
+                        <button pButton pRipple type="button" icon="pi pi-microsoft" pTooltip="Obtener el detalle de todos los pedidos" class="p-button-rounded p-button-success ml-2" style="max-width: 32px !important; max-height: 32px !important; background-color: #003E87;" (click)="obtenerAllDetallesPedidos(opcionesCargarTodosLosDocumentos.cargarTodoPorPrimeraVez)" *ngIf="((proveedor?.pedidosprov?.length || 0) > 0) ? true : false"></button>
+
+                        <button pButton pRipple type="button" icon="pi pi-check-circle" pTooltip="Obtener el detalle de todos los pedidos 'Confirmados'" class="p-button-rounded p-button-success ml-2" style="max-width: 32px !important; max-height: 32px !important; background-color: #228117;" (click)="obtenerAllDetallesPedidos(opcionesCargarTodosLosDocumentos.cargarTodosLosConfirmados)" *ngIf="((proveedor?.pedidosprov?.length || 0) > 0) ? true : false"></button>
+                    </div>
+                    <!-- ! DROPBOX con Filter -->
+                </div>
+                
+                <div class="col-7 flex flex-row justify-content-center align-items-center m-0 p-0">
+                    <div class="col-12 flex flex-row flex-wrap justify-content-end align-items-center m-0 p-0" style="align-items: flex-end;" >
+                        <div class="col-4 flex flex-row justify-content-center align-items-center m-0 mb-2 p-1">
+                            <span class="col-8 text-base text-left m-0 p-0 font-bold">Fecha Creación: </span>
+                            
+                            <div class="col-4 flex m-0 p-0 p-fluid">
+                                <input class="col-12" type="text" pInputText class="p-inputtext-sm" [value]="pedido?.fecha" [readOnly]="readOnlyInputsDates" disabled="true">
+                            </div>
+                        </div>
+                        
+                        <div class="col-4 flex flex-row justify-content-center align-items-center m-0 mb-2 p-1">
+                            <span class="col-8 text-base text-left m-0 p-0 font-bold">Fecha Pedido: </span>
+                            
+                            <div class="col-4 flex m-0 p-0 p-fluid">
+                                <input class="col-12" type="text" pInputText class="p-inputtext-sm" [value]="pedido?.fechapedido" [readOnly]="readOnlyInputsDates" disabled="true">
+                            </div>
+                        </div>                                                  
+                        
+                        <div class="col-4 flex flex-row justify-content-center align-items-center m-0 mb-2 p-1">
+                            <span class="col-8 text-base text-left m-0 p-0 font-bold">Fecha Confirmación: </span>
+                            
+                            <div class="col-4 flex m-0 p-0 p-fluid">
+                                <input class="col-12" type="text" pInputText class="p-inputtext-sm" [value]="pedido?.fechaconfirmado" [readOnly]="readOnlyInputsDates" disabled="true" >
+                            </div>
+                        </div>
+                        
+                        <div class="col-4 flex flex-row justify-content-center align-items-center m-0 mb-2 p-1">
+                            <span class="col-8 text-base text-left m-0 p-0 font-bold">Fecha Recibido: </span>
+                            
+                            <div class="col-4 flex m-0 p-0 p-fluid">
+                                <input class="col-12" type="text" pInputText class="p-inputtext-sm" [value]="pedido?.fechaingresado" [readOnly]="readOnlyInputsDates" disabled="true">
+                            </div>
+                        </div>
+                        
+                        <div class="col-4 flex flex-row justify-content-center align-items-center m-0 mb-2 p-1">
+                            <span class="col-8 text-base text-left m-0 p-0 font-bold">Fecha Ingreso Probable: </span>
+                            
+                            <div class="col-4 flex m-0 p-0 p-fluid">
+                                <input class="col-12" type="text" pInputText class="p-inputtext-sm" [value]="pedido?.pfechaingreso" [readOnly]="readOnlyInputsDates"disabled="true">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+            <!-- #endregion --> <!-- * Inputs y Fechas -->
+            
+            <!-- #region --> <!-- * Estado y botones -->
+            <div class="col-12 flex flex-row justify-content-between align-items-start m-0 p-0">
+                <div class="col-4 flex flex-column justify-content-center align-items-start m-0 p-0">
+                    <div class="col-12 flex flex-row justify-content-start align-items-center m-0 mb-3 p-0" [hidden]="allDetallesPedidosObtenidos">
+                        <span class="col-4 flex text-base text-left m-0 p-0 font-bold">Estado Actual: </span> 
+                        
+                        <span class="col-8 flex text-2xl text-left m-0 p-0 font-bold text-primary">{{ estadosPedido?.estadoactual_descripcion }}</span>
+                    </div>
+
+                    <div class="col-12 flex flex-row justify-content-start align-items-center m-0 p-0" [hidden]="allDetallesPedidosObtenidos" *ngIf="estadosPedido?.proximoestado_descripcion"> 
+                        <span class="col-4 flex text-base text-left m-0 p-0 font-bold">Cambiar estado a: </span>
+                        
+                        <p-button styleClass="p-button-sm p-button-outlined" [pTooltip]="'Actualizar el estado a: ' + estadosPedido?.proximoestado_descripcion" *ngIf=" estadosPedido?.proximoestado_descripcion " (click)="actualizarEstadoPedido()" [disabled]="!estadosPedido?.proximoestado_descripcion">
+                            <span class="p-ml-2 p-text-bold" style="font-size: 1rem; padding: 0px !important;">
+                                {{ estadosPedido?.proximoestado_descripcion }}
+                            </span>
+                        </p-button>
+                    </div>
+                </div>
+                
+                <div class="col-4 flex flex-column justify-content-center align-items-center m-0 p-0">
+                    <div class="col-12 flex flex-row justify-content-center align-items-center m-0 p-0">
+                        <div class="col-2 flex flex-row m-0 p-0">
+                            <p-radioButton name="filterData" value="oem" [(ngModel)]="selectedFilter" inputId="oemfilter" [disabled]="pedidoDetalle.length <= 0"></p-radioButton>
+                            <label class="ml-1 mr-1" for="oemfilter">Oem</label>
+                        </div>
+                        
+                        <div class="col-4 flex flex-row m-0 p-0">
+                            <p-radioButton name="filterData" value="codigoproducto" [(ngModel)]="selectedFilter" inputId="codprodfilter"[disabled]="pedidoDetalle.length <= 0"></p-radioButton>
+                            <label class="ml-1 mr-1" for="codprodfilter">Código Producto</label>
+                        </div>
+                        
+                        <div class="col-3 flex flex-row m-0 p-0">
+                            <p-radioButton name="filterData" value="descripcion" [(ngModel)]="selectedFilter" inputId="descfilter"[disabled]="pedidoDetalle.length <= 0"></p-radioButton>
+                            <label class="ml-1 mr-1" for="descfilter">Descripción</label>
+                        </div>
+                        
+                        <div class="col-3 flex flex-row m-0 p-0" *ngIf="allDetallesPedidosObtenidos">
+                            <p-radioButton name="filterData" value="numeropedido" [(ngModel)]="selectedFilter" inputId="pedifilter" [disabled]="pedidoDetalle.length <= 0"></p-radioButton>
+                            <label class="ml-1 mr-1" for="pedifilter">Pedido</label>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12 flex flex-row justify-content-center align-items-center p-fluid">
+                        <input class="col-12 m-0 p-2" #inputFiltro type="text" placeholder="Filtrar:" pInputText style="width: 80%;" (keyup)="filtrarElementosTabla(inputFiltro.value)" [disabled]="pedidoDetalle.length <= 0">
+                    </div>
+                </div>
+                
+                <div class="col-4 flex flex-row justify-content-end align-items-center m-0 p-0">
+                    <button pButton pRipple type="button" icon="pi pi-plus" pTooltip="Añadir producto" class="p-button-rounded p-button-info ml-1" (click)="dialogAgregarProducto()" [disabled]="(pedido === null) || (pedido.numeropedido === '')" [hidden]="(allDetallesPedidosObtenidos)" *ngIf="estadosPedido?.proximoestado_descripcion"></button>
+                    
+                    <button pButton pRipple type="button" icon="pi pi-refresh" pTooltip="Recargar pedido" class="p-button-rounded p-button-info ml-1" (click)="recargarDetallePedido()" [disabled]="pedidoDetalle.length <= 0" *ngIf="! allDetallesPedidosObtenidos"></button>
+
+                    <!-- ? Boton que se muestra para cuando se obtenga el detalle de todos los pedidos del proveedor -->
+                    <button pButton pRipple type="button" icon="pi pi-refresh" pTooltip="Recargar todos los pedidos" class="p-button-rounded p-button-info ml-1" (click)="obtenerAllDetallesPedidos(opcionesCargarTodosLosDocumentos.recargarTodo)" [disabled]="pedidoDetalle.length <= 0" *ngIf="allDetallesPedidosObtenidos"></button>
+
+                    <button pButton pRipple type="button" icon="pi pi-pencil" pTooltip="Habilitar columnas" class="p-button-rounded p-button-help ml-1" (click)="habilitarDeshabilitarColumnas(true)" *ngIf="! habilitarColumnas && (estadosPedido?.proximoestado_descripcion)" [disabled]="pedidoDetalle.length<=0"></button>
+
+                    <button pButton pRipple type="button" icon="pi pi-times" pTooltip="Deshabilitar columnas" class="p-button-rounded p-button-help ml-1" (click)="habilitarDeshabilitarColumnas(false)" *ngIf="habilitarColumnas && (estadosPedido?.proximoestado_descripcion)" [disabled]="pedidoDetalle.length<=0"></button>
+
+                    <button pButton pRipple type="button" icon="pi pi-check-circle" pTooltip="Cambiar todo el pedido a confirmado" class="p-button-rounded p-button-secondary ml-1" (click)="cambiarCantidadConfirmadoYPedido(1)" [disabled]="pedidoDetalle.length<=0 || ( (estadosPedido?.estado_actual !== 'e') && (estadosPedido?.estado_actual !== 'p') ) "[hidden]="allDetallesPedidosObtenidos" *ngIf="estadosPedido?.proximoestado_descripcion"></button>
+                    
+                    <button pButton pRipple type="button" icon="pi pi-arrow-left" pTooltip="Mover confirmado a pedido" class="p-button-rounded btn-conf-pedi  ml-1" (click)="cambiarCantidadConfirmadoYPedido(2)" [disabled]="pedidoDetalle.length <= 0" [hidden]="allDetallesPedidosObtenidos" *ngIf="estadosPedido?.proximoestado_descripcion"></button>
+
+                    <button pButton pRipple type="button" icon="pi pi-minus-circle" pTooltip="Establecer confirmado en cero" class="p-button-rounded btn-conf-cero ml-1" (click)="cambiarConfirmadoCero()" [disabled]="(pedidoDetalle.length <= 0) || ((estadosPedido?.estado_actual !== 'e') && (estadosPedido?.estado_actual !== 'p'))" [hidden]="allDetallesPedidosObtenidos" *ngIf="estadosPedido?.proximoestado_descripcion"></button>
+
+                    <button pButton pRipple type="button" icon="pi pi-file-excel" pTooltip="Exportar" class="p-button-rounded p-button-success ml-1" (click)="exportarPedidoDetalle()" [disabled]="pedidoDetalle.length <= 0" [hidden]="allDetallesPedidosObtenidos"></button>
+
+                    <div id="btnImport" style="width: 40px !important;" class="float-right ml-1" [hidden]="((allDetallesPedidosObtenidos) || (pedidoForm?.status === 'INVALID') || (proveedorForm?.status === 'INVALID') || ((estadosPedido?.estado_actual !== 'e') && (estadosPedido?.estado_actual !== 'p') && (estadosPedido?.estado_actual !== 'c'))) && (! allDetallesPedidosConfirmadosObtenidos)">
+                        <p-fileUpload #inputFile styleClass="p-button-rounded p-button-warning ml-1 fileInput" chooseIcon="pi pi-file-o" pTooltip="Importar" mode="basic" name="myfile[]" accept=".xlsx, .xls" [maxFileSize]="1000000" [customUpload]="true" (uploadHandler)="importarDatosExcell($event, inputFile)" [auto]="true"></p-fileUpload>
+                    </div>
+                    
+                    <div style="width: 40px !important;" class="float-right ml-1" [hidden]="(allDetallesPedidosObtenidos) || (pedidoForm?.status === 'INVALID') || (proveedorForm?.status === 'INVALID') || (estadosPedido?.estado_actual !== 'c')">
+                        <button pButton pRipple type="button" icon="pi pi-times" pTooltip="Cerrar pedido" tooltipPosition="left" class="p-button-rounded p-button-danger ml-1" (click)="mostrarModalCerrarPedidoNoFacturado()"></button>
+                    </div>
+                </div>
+            </div>
+            <!-- #endregion --> <!-- * Estado y botones -->
+            
+            <!-- #region --> <!-- * Table del Detalle del pedido -->
+            <div class="col-12 flex flex-column justify-content-center align-items-center m-0 mb-3 p-0">
+                <p-table class="col-12 m-0 p-0" [value]="pedidoDetalleFilter" [scrollable]="true" scrollHeight="36vh" columnResizeMode="expand" [resizableColumns]="true" styleClass="p-datatable-gridlines p-datatable-sm" [(selection)]="productosSeleccionados" [globalFilterFields]="['oem', 'codigoproducto', 'descripcion']" [paginator]="true" [rows]="25">
+                    <ng-template pTemplate="colgroup">
+                        <colgroup>
+                            <col style="width: 8%;" [hidden]="! allDetallesPedidosObtenidos">
+                            
+                            <col style="width: 6%;" [hidden]="! allDetallesPedidosObtenidos">
+                            
+                            <col style="width: 8%;">
+                            
+                            <col style="width: 13%;">
+                            
+                            <col style="width: 25%">
+                            
+                            <col>
+                            
+                            <col>
+                            
+                            <col style="width: 6%;">
+                            
+                            <col>
+                            
+                            <col style="width: 6%;">
+                            
+                            <col>
+                            
+                            <col>
+                            
+                            <col>
+                            
+                            <col style="width:4%">
+                        </colgroup>
+                    </ng-template>
+                    
+                    <ng-template pTemplate="header" >
+                        <tr [ngClass]="{ fontSize: true }">
+                            <td colspan="5" class="text-sm bg-primary p-2" [hidden]="allDetallesPedidosObtenidos"></td>
+                            
+                            <td colspan="7" class="text-sm bg-primary p-2" [hidden]="! allDetallesPedidosObtenidos"></td>
+                            
+                            <td colspan="2" class="text-center text-sm bg-primary p-2">Pedido</td>
+                            
+                            <td colspan="2" class="text-center text-sm bg-primary p-2">Confirmado</td>
+                            
+                            <td colspan="3" class="text-sm bg-primary p-2"></td>
+                        </tr>
+                        
+                        <tr [ngClass]="{ fontSize: true }">
+                            <th pResizableColumn pSortableColumn="numeropedido" class="text-sm bg-primary" pTooltip="Número de Pedido" [hidden]="!allDetallesPedidosObtenidos">
+                                Pedido
+                                
+                                <p-sortIcon field="numeropedido"></p-sortIcon>
+                                
+                                <p-columnFilter type="text" field="numeropedido" display="menu" [showAddButton]="false" matchMode="contains" [showMatchModes]="false"></p-columnFilter>
+                            </th>
+                            
+                            <th pResizableColumn pSortableColumn="estado" class="text-sm bg-primary" pTooltip="Estado del Pedido" [hidden]="!allDetallesPedidosObtenidos">
+                                Estado
+                                
+                                <p-sortIcon field="estado"></p-sortIcon>
+                            </th>
+                            
+                            <th pResizableColumn pSortableColumn="oem" pTooltip="OEM" class="text-sm bg-primary">
+                                OEM
+                                
+                                <p-sortIcon field="oem"></p-sortIcon>
+                            </th>
+                            
+                            <th pResizableColumn pSortableColumn="codigoproducto" pTooltip="Código Producto" class="text-sm bg-primary">
+                                Código Producto 
+                                
+                                <p-sortIcon field="codigoproducto"></p-sortIcon>
+                            </th>
+                            
+                            <th pResizableColumn pSortableColumn="descripcion" pTooltip="Descripción" class="text-sm bg-primary">
+                                Descripción 
+                                
+                                <p-sortIcon field="descripcion"></p-sortIcon>
+                            </th>
+                            
+                            <th pResizableColumn class="text-sm text-center bg-primary">Origen</th>
+                            
+                            <th pResizableColumn class="text-sm text-center bg-primary">Marca</th>
+                            
+                            <th pResizableColumn class="text-sm text-center bg-primary" pSortableColumn="cantidadpedido" pTooltip="Cantidad Pedido">
+                                <span>Cant.</span>
+                                
+                                <p-sortIcon field="cantidadpedido"></p-sortIcon>                <!-- ? Columna para el campo "cantidadpedido" -->
+                            </th>     
+                            
+                            <th pResizableColumn class="text-sm text-center bg-primary" pSortableColumn="preciopedido" pTooltip="Precio Pedido">
+                                <span>Precio</span>
+                                
+                                <p-sortIcon field="preciopedido"></p-sortIcon>                 <!-- ? Columna para el campo "preciopedido" -->
+                            </th>       
+                            
+                            <th pResizableColumn class="text-sm text-center bg-primary" pSortableColumn="cantidad" pTooltip="Cantidad Confirmado">
+                                <span>Cant.</span>
+                                
+                                <p-sortIcon field="cantidad"></p-sortIcon>                      <!-- ? Columna para el campo "cantidad" que es lo confirmado -->
+                            </th>                        
+                            
+                            <th pResizableColumn class="text-sm text-center bg-primary" pSortableColumn="precio" pTooltip="Precio Confirmado">
+                                <span>Precio </span>
+                                
+                                <p-sortIcon field="precio"></p-sortIcon>                        <!-- ? Columna para el campo "precio" que es lo confirmado -->
+                            </th>
+                            
+                            <th pResizableColumn class="text-sm text-center bg-primary" pTooltip="Cantidad Facturada">Cant. Facturada</th>
+                            
+                            <th pResizableColumn class="text-sm text-center bg-primary" pTooltip="Cantidad a Facturar">Cant. a Facturar</th>
+                            
+                            <th pResizableColumn class="text-sm text-center bg-primary">
+                                <p-tableHeaderCheckbox [hidden]="(allDetallesPedidosObtenidos) || (estadosPedido?.estado_actual === 'e')" *ngIf="estadosPedido?.proximoestado_descripcion"></p-tableHeaderCheckbox>
+                            </th>
+                        </tr>
+                    </ng-template>
+                    
+                    <ng-template pTemplate="body" let-pedidoDetalle let-rowData>
+                        <tr [ngClass]="{ fontSize: true }">
+                            <td class="text-sm" [hidden]="! allDetallesPedidosObtenidos">
+                                {{ pedidoDetalle.numeropedido }}
+                            </td>
+                            
+                            <td class="text-sm" [pTooltip]=" 'Estado: ' + pedidoDetalle.descripcionestado" [hidden]="! allDetallesPedidosObtenidos">
+                                <span class="p-1 border-round" [ngClass]="getClassEstado( pedidoDetalle.estado )">
+                                    {{ pedidoDetalle.descripcionestado }}
+                                </span>
+                            </td>
+                            
+                            <td class="text-sm" pEditableColumn [pTooltip]="pedidoDetalle.oem">
+                                <p-cellEditor *ngIf="habilitarColumnas">
+                                    <ng-template pTemplate="input">
+                                        <input class="text-sm" pInputText type="text" [style]="{width: '100%'}" [(ngModel)]="pedidoDetalle.oem" required onfocus="this.select();">
+                                    </ng-template>
+                                    
+                                    <ng-template pTemplate="output">
+                                        {{pedidoDetalle.oem}}
+                                    </ng-template>
+                                </p-cellEditor>
+                                
+                                <span *ngIf="!habilitarColumnas">
+                                    {{pedidoDetalle.oem}}
+                                </span>
+                            </td>
+                            
+                            <td class="text-sm" pEditableColumn [pTooltip]="pedidoDetalle.codigoproducto">
+                                <p-cellEditor *ngIf="habilitarColumnas">
+                                    <ng-template pTemplate="input">
+                                        <input class="text-sm" pInputText type="text" [style]="{width: '100%'}" [(ngModel)]="pedidoDetalle.codigoproducto" required onfocus="this.select();">
+                                    </ng-template>
+                                    
+                                    <ng-template pTemplate="output">
+                                        {{pedidoDetalle.codigoproducto}}
+                                    </ng-template>
+                                </p-cellEditor>
+                                
+                                <span *ngIf="!habilitarColumnas">
+                                    {{pedidoDetalle.codigoproducto}}
+                                </span>
+                            </td>
+                            
+                            <td class="text-sm" pEditableColumn [pTooltip]="pedidoDetalle.descripcion">
+                                <p-cellEditor *ngIf="habilitarColumnas">
+                                    <ng-template pTemplate="input">
+                                        <input class="text-sm" pInputText type="text" [style]="{width: '100%'}" [(ngModel)]="pedidoDetalle.descripcion" required onfocus="this.select();">
+                                    </ng-template>
+                                    
+                                    <ng-template pTemplate="output">
+                                        {{pedidoDetalle.descripcion | slice : 0 : 50 }} ...
+                                    </ng-template>
+                                </p-cellEditor>
+                                
+                                <span *ngIf="!habilitarColumnas">
+                                    {{ pedidoDetalle.descripcion | slice : 0 : 50 }} ...
+                                </span>
+                            </td>
+                            
+                            <td class="text-sm text-center" pEditableColumn>
+                                <p-cellEditor class="text-sm" *ngIf="habilitarColumnas">
+                                    <ng-template class="text-sm" pTemplate="input">
+                                        <p-dropdown #paisOrigen [options]="listaPaisOrigenProductos" [(ngModel)]="pedidoDetalle.paisorigenid" optionLabel="descripcion" optionValue="descripcion" [filter]="true" filterBy="descripcion" [showClear]="true" placeholder="Selec. origen" [style]="{'font-size': '12px !important'}" appendTo="body" class="dropdown-width" [editable]="true">
+                                            <ng-template pTemplate="selectedItem">
+                                                <div  *ngIf="pedidoDetalle?.paisorigenid">
+                                                    <div class="text-sm">{{pedidoDetalle?.paisorigenid}}</div>
+                                                </div>
+                                            </ng-template>
+                                            
+                                            <ng-template let-pais pTemplate="item">
+                                                <div>
+                                                    <div class="text-sm">{{pais.descripcion}}</div>
+                                                </div>
+                                            </ng-template>
+                                        </p-dropdown>
+                                    </ng-template>
+                                    
+                                    <ng-template class="text-sm" pTemplate="output">
+                                        {{ pedidoDetalle.paisorigenid }}
+                                    </ng-template>
+                                </p-cellEditor>
+                                
+                                <span class="text-sm" *ngIf="!habilitarColumnas">
+                                    {{ pedidoDetalle.paisorigenid }}
+                                </span>
+                            </td>
+                            
+                            <td class="text-sm text-center" pEditableColumn>
+                                <p-cellEditor class="text-sm" *ngIf="habilitarColumnas" >
+                                    <ng-template class="text-sm" pTemplate="input">
+                                        <p-dropdown #prodmarca [options]="listaMarcasProductos" [(ngModel)]="pedidoDetalle.marca" optionLabel="marca" optionValue="marca" [filter]="true" filterBy="marca" [showClear]="true" placeholder="Selec. marca" [style]="{'font-size': '12px !important' }" appendTo="body" class="dropdown-width" [editable]="true">
+                                            <ng-template pTemplate="selectedItem">
+                                                <div class=""  *ngIf="pedidoDetalle?.marca">
+                                                    <div class="text-sm">{{pedidoDetalle.marca}}</div>
+                                                </div>
+                                            </ng-template>
+                                            
+                                            <ng-template let-marca pTemplate="item">
+                                                <div class="">
+                                                    <div class="text-sm">{{marca.marca}}</div>
+                                                </div>
+                                            </ng-template>
+                                        </p-dropdown>
+                                    </ng-template>
+                                    
+                                    <ng-template class="text-sm" pTemplate="output">
+                                        {{pedidoDetalle.marca}}
+                                    </ng-template>
+                                </p-cellEditor>
+                                
+                                <span class="text-sm" *ngIf="!habilitarColumnas">
+                                    {{pedidoDetalle.marca}}
+                                </span>
+                            </td>
+                            
+                            <td class="text-sm text-right {{ (pedidoDetalle.resaltar_nuevo_cantidad_pedido_en_tabla) ? 'bg-green-300' : (pedidoDetalle.resaltar_modificado_cantidad_pedido_en_tabla) ? 'bg-yellow-300' : '' }}" pEditableColumn>
+                                <p-cellEditor *ngIf="habilitarColumnas">
+                                    <ng-template pTemplate="input">
+                                        <input class="text-sm" pInputText type="text" [style]="{width: '100%'}" [(ngModel)]="pedidoDetalle.cantidadpedido" required onfocus="this.select();">
+                                    </ng-template>
+                                    
+                                    <ng-template pTemplate="output">
+                                        {{pedidoDetalle.cantidadpedido}}
+                                    </ng-template>
+                                </p-cellEditor>
+                                
+                                <span *ngIf="!habilitarColumnas">
+                                    {{pedidoDetalle.cantidadpedido}}
+                                </span>
+                            </td>
+                            
+                            <td class="text-sm text-right {{ (pedidoDetalle.resaltar_nuevo_precio_pedido_en_tabla) ? 'bg-green-300' : (pedidoDetalle.resaltar_modificado_precio_pedido_en_tabla) ? 'bg-yellow-300' : '' }}" pEditableColumn>
+                                <p-cellEditor *ngIf="habilitarColumnas">
+                                    <ng-template pTemplate="input">
+                                        <input class="text-sm" pInputText type="text" [style]="{width: '100%'}" [(ngModel)]="pedidoDetalle.preciopedido" required onfocus="this.select();">
+                                    </ng-template>
+                                    
+                                    <ng-template pTemplate="output">
+                                        {{pedidoDetalle.preciopedido}}
+                                    </ng-template>
+                                </p-cellEditor>
+                                
+                                <span *ngIf="!habilitarColumnas">
+                                    {{pedidoDetalle.preciopedido}}
+                                </span>
+                            </td>
+                            
+                            <td class="text-sm text-center {{ (pedidoDetalle.resaltar_nuevo_cantidad_confirmado_en_tabla) ? 'bg-green-300' : (pedidoDetalle.resaltar_modificado_cantidad_confirmado_en_tabla) ? 'bg-yellow-300' : '' }}" pEditableColumn>
+                                <p-cellEditor *ngIf="(habilitarColumnas) && (estadosPedido?.estado_actual === 'p')">
+                                    <ng-template pTemplate="input">
+                                        <input class="text-sm" pInputText type="text" [style]="{width: '100%'}" [(ngModel)]="pedidoDetalle.cantidad" required onfocus="this.select();">
+                                    </ng-template>
+                                    
+                                    <ng-template pTemplate="output">
+                                        {{ pedidoDetalle.cantidad }}
+                                    </ng-template>
+                                </p-cellEditor>
+                                
+                                <span *ngIf="(! habilitarColumnas) || (estadosPedido?.estado_actual !== 'p')">
+                                    {{ pedidoDetalle.cantidad }}
+                                </span>
+                            </td>
+                            
+                            <td class="text-sm text-center {{ (pedidoDetalle.resaltar_nuevo_precio_confirmado_en_tabla) ? 'bg-green-300' : (pedidoDetalle.resaltar_modificado_precio_confirmado_en_tabla) ? 'bg-yellow-300' : '' }}" pEditableColumn>
+                                <p-cellEditor *ngIf="(habilitarColumnas) && (estadosPedido?.estado_actual === 'p')">
+                                    <ng-template pTemplate="input">
+                                        <input class="text-sm" pInputText type="text" [style]="{width: '100%'}" [(ngModel)]="pedidoDetalle.precio" required onfocus="this.select();">
+                                    </ng-template>
+                                    
+                                    <ng-template pTemplate="output">
+                                        {{ pedidoDetalle.precio }}
+                                    </ng-template>
+                                </p-cellEditor>
+                                
+                                <span *ngIf="(! habilitarColumnas) || (estadosPedido?.estado_actual !== 'p')">
+                                    {{ pedidoDetalle.precio }}
+                                </span>
+                            </td>
+                            
+                            <td class="text-sm text-right">
+                                {{pedidoDetalle.cantfacturada}}
+                            </td>
+                            
+                            <td class="text-sm text-right" pEditableColumn [ngClass]="{'facturado-completo' : ((pedidoDetalle.cantidad - pedidoDetalle.cantfacturada) === 0) ? true : false}" (dblclick)="establecerCantidadFacturar(pedidoDetalle.detalleid)">
+                                <p-cellEditor *ngIf="(habilitarColumnas) && (estadosPedido?.estado_actual !== 'e')" [hidden]="((pedidoDetalle.cantidad - pedidoDetalle.cantfacturada) === 0 ) ? true : false">
+                                    <ng-template pTemplate="input">
+                                        <input class="text-sm" pInputText type="text" [style]="{width: '100%'}" [(ngModel)]="pedidoDetalle.cantfacturar" required onfocus="this.select();">
+                                    </ng-template>
+                                    
+                                    <ng-template pTemplate="output">
+                                        {{ pedidoDetalle.cantfacturar }} 
+                                    </ng-template>
+                                </p-cellEditor>
+                                
+                                <span *ngIf="(! habilitarColumnas) || (estadosPedido?.estado_actual === 'e')">
+                                    {{pedidoDetalle.cantfacturar}}
+                                </span>
+                            </td>
+                            
+                            <td *ngIf="pedidoDetalle.cantidadpedido >= 0" class="text-center">
+                                <p-tableCheckbox *ngIf="! allDetallesPedidosObtenidos && (estadosPedido?.proximoestado_descripcion)" [value]="rowData" [hidden]="estadosPedido?.estado_actual === 'e'"></p-tableCheckbox>
+                                
+                                <p-tableCheckbox *ngIf="allDetallesPedidosObtenidos && (estadosPedido?.proximoestado_descripcion)" [value]="rowData" [hidden]="pedidoDetalle.estado !== 'c'"></p-tableCheckbox>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+                
+                <!-- #region --> <!-- * Calculos -->
+                <p-table class="col-12 m-0 p-0" [value]="[]" styleClass="p-datatable-gridlines p-datatable-sm">
+                    <ng-template pTemplate="footer">
+                        <tr>
+                            <td colspan="9"></td>
+                        </tr>
+
+                        <tr [ngClass]="{ fontSize: true }">
+                            <td colspan="4" class="text-sm p-2 bg-primary"></td>
+                            
+                            <td colspan="2" class="text-center text-sm p-2 bg-primary">Total Pedido</td>
+                            
+                            <td class="text-sm p-2 bg-primary"></td>
+                            
+                            <td colspan="2" class="text-center text-sm p-2 bg-primary">Total Confirmado</td>
+                        </tr>
+                        
+                        <tr [ngClass]="{ fontSize: true }">
+                            <td class="text-sm bg-primary">Items: {{ ( pedidoDetalle.length ) ? pedidoDetalle.length : 0  }}</td>
+                            
+                            <td colspan="3" class="text-sm bg-primary"></td>
+                            
+                            <td class="text-right text-sm bg-primary" pTooltip="Total cantidad pedido"> {{ ToCantPedido | number}}</td>
+                            
+                            <td class="text-right text-sm bg-primary" pTooltip="Total precio pedido"> {{ ToPrecioPedido | number}}</td>
+                            
+                            <td class="text-sm bg-primary"></td>
+                            
+                            <td class="text-right text-sm bg-primary" pTooltip="Total cantidad pedido"> {{ ToCantConfirmado | number}}</td>
+                            
+                            <td class="text-right text-sm bg-primary" pTooltip="Total precio pedido"> {{ ToPrecioConfirmado | number}}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+            <!-- #endregion --> <!-- * Table del Detalle del pedido -->
+            
+            <!-- #region --> <!-- Botones inferiores -->
+            <div class="col-12 flex flex-row justify-content-center align-items m-0 p-0">
+                <div class="col-12 flex flex-row justify-content-end align-items m-0 p-0">                    
+                    <button pButton pRipple type="button" label="Borrar" class="p-button-outlined p-button-rounded text-sm btn-color-borrar mr-2" icon="pi pi-trash" iconPos="right" (click)="borrarRegistros()" [disabled]="productosSeleccionados.length === 0" [hidden]="allDetallesPedidosObtenidos" *ngIf="estadosPedido?.proximoestado_descripcion"></button>
+                    
+                    <button pButton pRipple type="button" label="Nuevo" class="p-button-outlined p-button-rounded text-sm btn-color-nuevo mr-2" icon="pi pi-inbox" iconPos="right" (click)="buscarNuevoCodigo()"></button>
+                    
+                    <button pButton pRipple type="button" label="Guardar" class="p-button-outlined p-button-rounded text-sm btn-color-guardar mr-2" icon="pi pi-save" iconPos="right" (click)="actualizarRegistros()" [disabled]="pedidoDetalle.length === 0" *ngIf="estadosPedido?.proximoestado_descripcion"></button>
+                    
+                    <button pButton pRipple type="button" label="Agregar a Factura" class="p-button-outlined p-button-rounded text-sm btn-color-agregar" icon="pi pi-send" iconPos="right" (click)="dialogAgregarFactura()" [disabled]="(ToCantConfirmado === 0) || (productosSeleccionados.length === 0) || (estadosPedido?.estado_actual === 'e') || (estadosPedido?.estado_actual === 'p')" *ngIf="estadosPedido?.proximoestado_descripcion"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- * Modal para añadir un nuevo producto al detalle del pedido -->
+<p-dialog [(visible)]="addProduct" [style]="{width: '450px'}" header="Añadir Producto" [modal]="true" styleClass="p-fluid" *ngIf="newProduct">
+    <ng-template pTemplate="content">
+        <div class="col-12 flex flex-column justify-content-center align-items-start m-0 mb-3 p-0 p-field">
+            <label class="col-12 m-0 mb-2 p-0 text-base font-bold" for="name">OEM</label>
+            
+            <input type="text" pInputText id="name" [(ngModel)]="newProduct.oem" required autofocus autocomplete="off" />
+            
+            <small class="p-error" *ngIf="(productoAgregado) && (! newProduct.oem)">El OEM es requerido.</small>
+        </div>
+
+        <div class="col-12 flex flex-column justify-content-center align-items-start m-0 mb-3 p-0 p-field">
+            <label class="col-12 m-0 mb-2 p-0 text-base font-bold" for="name">Código de Producto</label>
+            
+            <input type="text" pInputText id="name" [(ngModel)]="newProduct.codigoproducto" required autofocus autocomplete="off"/>
+            
+            <small class="p-error" *ngIf="productoAgregado">El código de producto es requerido.</small>
+        </div>
+        
+        <div class="col-12 flex flex-column justify-content-center align-items-start m-0 mb-3 p-0 p-field">
+            <label class="col-12 m-0 mb-2 p-0 text-base font-bold" for="description">Descripción</label>
+            
+            <textarea id="description" pInputTextarea [(ngModel)]="newProduct.descripcion" required rows="3" cols="20"></textarea>
+        </div>
+        
+        <div class="col-12 flex flex-row justify-content-center align-items-start m-0 mb-3 p-0">
+            <div class="col-6 flex flex-column justify-content-center align-items-start p-0 p-field">
+                <label class="col-12 m-0 mb-2 p-0 text-base font-bold" for="paisorigenid">País de Origen</label>
+
+                <p-dropdown [options]="listaPaisOrigenProductos" [(ngModel)]="newProduct.paisorigenid" optionLabel="descripcion" optionValue="descripcion" [filter]="true" filterBy="descripcion" [showClear]="true" placeholder="Selec. origen" [style]="{'font-size': '12px !important'}" appendTo="body" [editable]="true">
+                    <ng-template pTemplate="selectedItem">
+                        <div class=""  *ngIf="newProduct?.paisorigenid">
+                            <div>{{newProduct.paisorigenid}}</div>
+                        </div>
+                    </ng-template>
+                    
+                    <ng-template let-pais pTemplate="item">
+                        <div class="">
+                            <div>{{ pais.descripcion }}</div>
+                        </div>
+                    </ng-template>
+                </p-dropdown>
+            </div>
+            
+            <div class="col-6 flex flex-column justify-content-center align-items-start p-0 pl-3 p-field mb-1">
+                <label class="col-12 m-0 mb-2 p-0 text-base font-bold" for="marca">Marca</label>
+                
+                <p-dropdown [options]="listaMarcasProductos" [(ngModel)]="newProduct.marca" optionLabel="marca" optionValue="marca" [filter]="true" filterBy="marca" [showClear]="true" placeholder="Selec. marca" [style]="{'font-size': '12px !important' }" appendTo="body" [editable]="true">
+                    <ng-template pTemplate="selectedItem">
+                        <div class=""  *ngIf="newProduct?.marca">
+                            <div>{{newProduct.marca}}</div>
+                        </div>
+                    </ng-template>
+                    
+                    <ng-template let-marca pTemplate="item">
+                        <div class="">
+                            <div>{{marca.marca}}</div>
+                        </div>
+                    </ng-template>
+                </p-dropdown>
+            </div>
+        </div>
+        
+        <div class="col-12 flex flex-column justify-content-center align-items-start m-0 mb-3 p-0 p-field">
+            <label class="col-12 m-0 mb-2 p-0 text-base font-bold" for="quantity">Cantidad</label>
+            
+            <p-inputNumber id="quantity" [(ngModel)]="newProduct.cantidadpedido"></p-inputNumber>
+        </div>
+
+        <div class="col-12 flex flex-column justify-content-center align-items-start m-0 mb-3 p-0 p-field">
+            <label class="col-12 m-0 mb-2 p-0 text-base font-bold" for="price">Precio</label>
+            
+            <p-inputNumber id="price" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="2" [(ngModel)]="newProduct.preciopedido"></p-inputNumber>
+        </div>
+
+        <div class="col-12 flex flex-column justify-content-center align-items-start m-0 p-0 p-field">
+            <label class="col-12 m-0 mb-2 p-0 text-base font-bold">Es Reemplazo</label>
+            
+            <div class="col-12 flex flex-row justify-content-start align-items-start m-0 p-0">
+                <div class="p-field-radiobutton p-col-6 mr-3">
+                    <p-radioButton id="es_reemplazosi" label="Sí" name="es_reemplazo" [value]="true" [(ngModel)]="newProduct.es_reemplazo"></p-radioButton>
+                </div>
+                
+                <div class="p-field-radiobutton p-col-6">
+                    <p-radioButton id="es_reemplazono" label="No" name="es_reemplazo" [value]="false" [(ngModel)]="newProduct.es_reemplazo"></p-radioButton>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+    
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+        
+        <button pButton pRipple label="Añadir" icon="pi pi-check" class="p-button-text" (click)="agregarProductoAlDetalle()"></button>
+    </ng-template>
+</p-dialog>
+
+<!-- * Modal para la creacion de un nuevo documento de factura -->
+<p-dialog [(visible)]="moverFactura" [style]="{width: '450px'}" header="Datos de Factura" [modal]="true" styleClass="p-fluid" *ngIf="newDocument">
+    <ng-template pTemplate="content">
+        <div class="col-12 flex flex-column justify-content-center align-items-start m-0 mb-3 p-0 p-field">
+            <label class="col-12 m-0 mb-2 p-0 text-base font-bold" for="codprov">Código Proveedor: </label>
+            
+            <input type="text" pInputText id="codprov" [value]="newDocument.codigoproveedor" [(ngModel)]="newDocument.codigoproveedor" required disabled="true"/>
+            
+            <small class="p-error" *ngIf="(documentoAgregado) && (! newDocument.codigoproveedor)">El código es requerido.</small>
+        </div>
+        
+        <div class="col-12 flex flex-column justify-content-center align-items-start m-0 mb-3 p-0 p-field">
+            <label class="col-12 m-0 mb-2 p-0 text-base font-bold" for="documento">Número de documento: </label>
+            
+            <input type="text" pInputText id="documento" [(ngModel)]="newDocument.numerodocumento" (keyup)="convertirMayusculas()" required autofocus="true" autocomplete="off"/>
+            
+            <small class="p-error" *ngIf="(documentoAgregado) && (! newDocument.numerodocumento)">El número de documento es requerido.</small>
+        </div>
+        
+        <div class="col-12 flex flex-column justify-content-center align-items-start m-0 mb-3 p-0 p-field">
+            <label class="col-12 m-0 mb-2 p-0 text-base font-bold" for="documento_fechacreacion">Fecha emisión de documento: </label>
+
+            <div class="col-12 flex flex-row justify-content-center align-items-center p-fluid m-0 p-0">
+                <p-calendar class="col-12 m-0 p-0" id="documento_fechacreacion" appendTo="body" [(ngModel)]="newDocument.fechaemision" [showIcon]="true" [required]="true" [maxDate]="obtenerFechaActual()" [readonlyInput]="true"></p-calendar>
+            </div>
+        </div>
+
+        <div class="col-12 flex flex-column justify-content-center align-items-start m-0 mb-3 p-0 p-field">
+            <label class="col-12 flex flex-row m-0 mb-2 p-0 text-base font-bold" for="documento_fechavencimiento">Fecha vencimiento de documento: <p class="font-normal ml-2">(Opc.)</p></label>
+
+            <div class="col-12 flex flex-row justify-content-center align-items-center p-fluid m-0 p-0">
+                <p-calendar class="col-12 m-0 p-0" id="documento_fechavencimiento" appendTo="body" [(ngModel)]="newDocument.fechavencimiento" [showIcon]="true" [required]="true" [minDate]="obtenerFechaActual()" [readonlyInput]="true"></p-calendar>
+            </div>
+        </div>
+    </ng-template>
+    
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-outlined p-button-danger" (click)="hideDialog()"></button>
+        
+        <button pButton pRipple label="Agregar" icon="pi pi-check" class="p-button-outlined p-button-info" (click)="agregaAFactura()"></button>
+    </ng-template>
+</p-dialog>
+
+<p-overlayPanel #panelInstrucciones [style]="{width: '450px'}">
+    <ng-template pTemplate>
+        <!-- Cuando el pedido seleecionado esta en estado CREACION -->
+        <div class="col-12 flex flex-column justify-content-center align-items-center p-0" *ngIf="estadosPedido?.estado_actual === 'e'">
+            <p class="col-12 text-justify text-base">
+                Para determinar si un ítem se debe actualizar, se evaluarán y modificarán las <b>cantidades</b> y <b>precios 'pedido'</b>.
+            </p>
+        </div>
+
+        <!-- Cuando el pedido seleecionado esta en estado PEDIDO -->
+        <div class="col-12 flex flex-column justify-content-center align-items-center p-0" *ngIf="estadosPedido?.estado_actual === 'p'">
+            <p class="col-12 text-justify text-base">
+                Para determinar si un ítem se debe actualizar, se evaluarán y modificarán las <b>cantidades</b> y <b>precios 'confirmado'</b>.
+            </p>
+        </div>
+
+        <!-- Cuando el pedido seleecionado esta en estado CONFIRMADO -->
+        <div class="col-12 flex flex-column justify-content-center align-items-center p-0" *ngIf="estadosPedido?.estado_actual === 'c'">
+            <p class="col-12 text-justify text-base mb-0 pb-0">
+                Este pedido, al estar en estado <b>confirmado</b>, los nuevos ítems que encuentren en el archivo seleccionado, no se ingresarán en este detalle, se le preguntará si desea exportarlos a otro Excel.
+            </p>
+
+            <p class="col-12 text-justify text-base">
+                Para determinar si un ítem se debe actualizar, se evaluarán y modificarán las <b>cantidades</b> y <b>precios</b>, tanto de <b>'pedido'</b> como <b>'confirmado'</b>.
+            </p>
+        </div>
+    </ng-template>
+</p-overlayPanel>
+
+<!-- * Modal confirmar cierre de pedido -->
+<p-dialog [(visible)]="datosProveedorCerrarPedido" [style]="{width: '1000px'}" header="Cierre de pedido" [modal]="true" styleClass="p-fluid" *ngIf="mostrarModalCerrarPedido" (onHide)="cancelarCierrePedido()">
+    <p class="text-justify text-base">{{ itemsConCantidadConfirmadaNoFacturada.length }} de {{ pedidoDetalle.length }} productos que se <b>trasladarán</b> a un <b>nuevo pedido</b> son los siguientes:</p>
+
+    <div class="col-12 flex flex-row flex-wrap justify-content-start align-items-stretch m-0 mb-2 p-0">
+        <p-table class="col-12 m-0 p-0" [value]="itemsConCantidadConfirmadaNoFacturada" [scrollable]="true" scrollHeight="300px">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th class="bg-primary text-white">OEM</th>
+
+                    <th class="bg-primary text-white">Codigo producto</th>
+
+                    <th class="bg-primary text-white">Descripcion</th>
+
+                    <th class="bg-primary text-white">Dif. cantidad</th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-itemNoFacturado>
+                <tr>
+                    <td>{{ itemNoFacturado.oem }}</td>
+
+                    <td>{{ itemNoFacturado.codigoproducto }}</td>
+
+                    <td>{{ itemNoFacturado.descripcion }}</td>
+
+                    <td>{{ itemNoFacturado.cantidad }}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+
+    <div class="col-12 flex flex-row justify-content-end align-items-center m-0 p-0">
+        <button pButton pRipple type="button" icon="pi pi-file-excel" pTooltip="Exportar" class="p-button-rounded p-button-success" (click)="exportarProductosCierrePedido()"></button>
+    </div>
+
+    <div class="col-12 flex flex-row justify-content-center align-items-stretch m-0 mb-2 p-0" *ngIf="! destinoPedidoPostCierre">
+        <p class="col-6 flex justify-content-start align-items-center text-base m-0 p-0">Seleccione uno de los siguientes pedidos para ingresar los productos.</p>
+
+        <div class="col-4 flex justify-content-center align-items-center m-0 p-0 p-fluid">
+            <p-dropdown class="col-12 m-0 p-0" [options]="posiblePedidoDestinoPostCierre" [(ngModel)]="destinoPedidoPostCierre" placeholder="Seleccione un numero de pedido" appendTo="body" optionLabel="numeropedido"></p-dropdown>
+        </div>
+    </div>
+
+    <div class="col-12 flex flex-row justify-content-center align-items-stretch m-0 mb-2 p-0" *ngIf="destinoPedidoPostCierre">
+        <p class="col-6 flex justify-content-center align-items-center font-bold text-lg m-0 p-0">Todos los productos de trasladaran al pedido: <b class="text-red-500">{{ destinoPedidoPostCierre.numeropedido }}</b></p>
+    </div>
+
+    <p class="col-12 flex justify-content-center align-items-center font-bold text-lg m-0 p-0">En el pedido seleccionado, el producto se ingresará si no existe o se sumarán las cantidades confirmadas en caso de ya existir.</p>
+    
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-outlined p-button-danger" (click)="cancelarCierrePedido()"></button>
+        
+        <button pButton pRipple label="Cerrar pedido" icon="pi pi-check" class="p-button-outlined p-button-info" (click)="cerrarPedido()" [disabled]="! destinoPedidoPostCierre"></button>
+    </ng-template>
+</p-dialog>
+
+<!-- * Modal buscar y elegir un proveedor desde una tabla -->
+<p-dialog [(visible)]="mostrarModalBuscarProveedor" [style]="{width: '600px'}" header="Busqueda de proveedor" [modal]="true" styleClass="p-fluid" *ngIf="mostrarModalBuscarProveedor" (onHide)="cancelarBusquedaProveedor()">
+    <p class="text-justify text-base">Busque y seleccione el proveedor del cual desea obtener los pedidos.</p>
+
+    <div class="col-12 flex flex-row flex-wrap justify-content-start align-items-stretch m-0 p-0">
+        <p-table #proveedor class="col-12 m-0 p-0" [value]="busquedaProveedorLista" [scrollable]="true" scrollHeight="300px" selectionMode="single" [(selection)]="busquedaProveedorSeleccionado" dataKey="codigoproveedor" [paginator]="true" [rows]="25" [globalFilterFields]="['codigoproveedor', 'nombre']">
+            <ng-template pTemplate="caption">
+                <div class="col-12 flex flex-row justify-content-end m-0 p-0">
+                    <div class="col-6 flex m-0 p-0 p-fluid">
+                        <span class="p-input-icon-left ml-auto">
+                            <i class="pi pi-search"></i>
+    
+                            <input pInputText type="text" (input)="proveedor.filterGlobal(getValueOfEvent_busquedaProveedor($event), 'contains')" placeholder="Código o el nombre del proveedor" pAutoFocus [autofocus]="true"/>
+                        </span>
+                    </div>
+                </div>
+            </ng-template>
+            
+            <ng-template pTemplate="header">
+                <tr>
+                    <th class="col-1 bg-primary text-white">Cod.</th>
+
+                    <th class="col-11 bg-primary text-white">Nombre</th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-proveedor>
+                <tr [pSelectableRow]="proveedor" class="{{ (proveedor.codigoproveedor === busquedaProveedorSeleccionado?.codigoproveedor) ? 'bg-blue-100' : '' }}">
+                    <td class="col-1 m-0 pt-2 pb-2">{{ proveedor.codigoproveedor }}</td>
+
+                    <td class="col-11 m-0 pt-2 pb-2">{{ proveedor.nombre }}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+    
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-outlined p-button-danger" (click)="cancelarBusquedaProveedor()"></button>
+        
+        <button pButton pRipple label="Seleccionar" icon="pi pi-check" class="p-button-outlined p-button-info" (click)="seleccionarBusquedaProveedor()" *ngIf="busquedaProveedorSeleccionado"></button>
+    </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>

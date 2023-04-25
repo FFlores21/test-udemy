@@ -1,0 +1,35 @@
+<p-galleria #galleria 
+            [value]="images"
+            [(activeIndex)]="activeIndex" 
+            [numVisible]="5" 
+            [containerStyle]="{'width': !fullscreen ? '100%' : '', 'background-color':'grey'}" 
+            [containerClass]="galleriaClass()" 
+            [showThumbnails]="showThumbnails"
+            [showItemNavigators]="true" 
+            [showItemNavigatorsOnHover]="false" 
+            [circular]="true" 
+            [autoPlay]="false" 
+            [transitionInterval]="3000"> 
+    <ng-template pTemplate="item" let-item>
+        <img [src]="item.imagensrc" [ngStyle]="{'height': !fullscreen ? '40vh' : '85vh', 'display': !fullscreen ? 'block' : ''}" />
+    </ng-template>
+
+    <ng-template pTemplate="thumbnail" let-item>
+        <div class="grid grid-nogutter justify-content-center">
+            <img [src]="item.imagenthumbnailsrc" style="display: block;"/>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer" let-item> 
+        <div class="custom-galleria-footer">
+            <button type="button" pButton icon="pi pi-list" (click)="onThumbnailButtonClick()"></button>
+            <span *ngIf="images"  class="title-container">
+                <span>{{activeIndex + 1}}/{{images.length}}</span>
+                <span class="title">{{images[activeIndex].titulo}}</span>
+                <span>{{images[activeIndex].alt}}</span>
+            </span>
+            <button type="button" pButton [icon]="fullScreenIcon()" (click)="toggleFullScreen()" class="fullscreen-button"></button>
+        </div>
+    </ng-template>
+
+</p-galleria>

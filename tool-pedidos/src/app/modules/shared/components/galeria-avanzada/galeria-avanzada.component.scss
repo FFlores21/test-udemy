@@ -1,0 +1,64 @@
+:host ::ng-deep .custom-galleria {
+    &.p-galleria {
+        &.fullscreen {
+            display: flex;
+            flex-direction: column;
+            .p-galleria-content {
+                flex-grow: 1;
+                justify-content: center;
+                height: 97vh;
+            }
+        }
+        .p-galleria-content {
+            position: relative;
+            background-color: rgb(255, 255, 255);
+        }
+        .p-galleria-thumbnail-wrapper {
+            position: relative;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+        }
+
+        .p-galleria-thumbnail-container{
+            background: rgb(233, 233, 233);
+        }
+        .p-galleria-thumbnail-items-container {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .p-galleria-thumbnail-items{
+            justify-content: space-between;
+        }
+
+        .custom-galleria-footer {
+            display: flex;
+            align-items: center;
+            background-color: rgba(116, 116, 116, 0.986);
+            color: #ffffff;
+            > button {
+                background-color: transparent;
+                color: #ffffff;
+                border: 0 none;
+                border-radius: 0;
+                margin: 0.2rem 0;
+                &.fullscreen-button {
+                    margin-left: auto;
+                }
+                &:hover {
+                    background-color: rgba(255, 255, 255, 0.1);
+                }
+            }
+        }
+        .title-container {
+            > span {
+                font-size: 0.9rem;
+                padding-left: 0.829rem;
+                &.title {
+                    font-weight: bold;
+                }
+            }
+        }
+    }
+}

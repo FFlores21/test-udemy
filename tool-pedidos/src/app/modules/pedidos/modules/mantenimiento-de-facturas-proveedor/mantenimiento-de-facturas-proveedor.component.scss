@@ -1,0 +1,285 @@
+// .tr-encabezado {
+//     background-color: #003E87 !important; 
+//     color: #fff !important;
+//     padding: 6px !important;
+//     font-weight: 500 !important;
+// }
+
+// .tr-encabezado-1 {
+//     background-color: #003E87 !important; 
+//     color: #fff !important;
+//     padding: 6px !important;
+//     font-weight: 500 !important;
+// }
+
+// .p-centro {
+//     text-align: center !important;
+// }
+
+// .p-column-filter-operator {
+//     display: none;
+// }
+
+// h2 {
+//     padding-left: 1rem;
+//     font-size: 1.5rem !important;
+//     font-weight: 700;
+// }
+
+// th.fontSize { 
+//     font-size: 12px !important;
+// }
+
+// .fontSize { 
+//     font-size: 11px !important;
+// }
+
+// input {
+//     font-size: 13px !important;
+//     padding: 4px !important;
+// }
+
+// .tr-encabezado td {
+//     padding: 5px 7px !important;
+// }
+
+// .container-div {
+// 	display: flex;
+// 	flex-direction: row;
+// 	flex-wrap: wrap;
+// 	justify-content: flex-end;
+// 	align-items: stretch;
+// 	align-content: stretch;
+// } 
+
+// .span-w1 {
+//     font-size: 13px !important;
+//     font-weight: 500;
+//     width: 160px !important;
+//     margin: 0 5px 0 5px;
+// }
+
+// .span-w2 {
+//     font-size: 13px !important;
+//     width: 100%;
+//     margin: 0 5px 0 5px;
+// }
+
+// .span-w3 {
+//     font-size: 13px !important;
+//     font-weight: 500;
+//     width: 150px !important;
+//     margin-left: 10px;
+// }
+
+// .span-w4 {
+//     font-size: 13px !important;
+//     width: 70px !important;
+//     margin: 0 5px 0 5px;
+// }
+
+// .input-totales {
+//     width: 70px;
+// }
+
+// .span-total-pedido {
+//     border: 0.5px solid #46464646;
+//     text-align: center;
+//     justify-content: center;
+//     border-radius: 5px;
+//     height: 36px;
+//     padding-top: 2px;
+// }
+
+// .span-items {
+//     width: 70px;
+// }
+
+// .span-cant-total {
+//     width: 80px;
+// }
+
+// button {
+//     font-size: 13px !important;
+// }
+
+// .estado-pedido {
+//     font-size: 1.3rem;
+//     font-weight: 600;
+//     color: #003e87;
+// }
+
+// .spinner {
+//     color: #fff;
+//     font-size: 20px;
+// }
+
+// ::ng-deep #btnImport .p-button-warning  {
+//     color: #fff !important;
+//     background-color:  #FBC02D !important;
+//     border: none !important;
+// }
+
+// ::ng-deep #btnImport .p-button-warning:hover {
+//     color: #fff !important;
+//     background-color:  #FBC02D !important;
+//     border: none !important;
+// }
+
+// // .p-column-filter-menu-button.p-column-filter-menu-button-active, .p-column-filter-menu-button.p-column-filter-menu-button-active:hover {
+// ::ng-deep .p-column-filter button:hover {
+//     background: #1b5fad !important;
+//     color: white !important;
+// }
+
+// ::ng-deep .p-card .p-card-content {
+//     // ::ng-deep .p-card {
+//     padding: 1rem 0 0 0 !important;
+// }
+
+// ::ng-deep .p-card {
+//     box-shadow: none !important;
+// }
+
+// ::ng-deep .p-dropdown {
+//     min-width: 170px;
+//     max-width: 170px;
+//     max-height: 32px;
+//     font-size: 14px;
+// } 
+
+// ::ng-deep .p-dropdown .p-dropdown-label{
+//     font-size: 14px;
+// }
+
+// // ? ============================= ESTADOS =============================
+
+// // ? CLASE QUE SUPERPONE ELEMENTOS SOBRE CUALQUIER OTRO ELEMENTO EN LA PAGINA
+// // .overlay {
+// //     position: fixed !important;
+// //     top: 50% !important;
+// //     left: 55% !important;
+// //     // width: 100% !important;
+// //     // height: 100% !important;
+// //     z-index: 99999 !important;
+// // }
+
+// // ? Para evitar que un select se esconda en una columna.
+// ::ng-deep td .p-dropdown {
+//     min-width: 100%;
+//     max-width: 100%;
+//     max-height: 35px;
+//     font-size: 14px;
+// }
+
+// ::ng-deep td .p-dropdown .p-dropdown-label{
+//     font-size: 14px;
+// }
+
+$color-white: #fff;
+$color-black: #000;
+$color-blue: #003E87;
+$color-celeste: #53a1fa;
+$color-green: green;
+$color-purple: #8c239e;
+$color-orange: rgb(255, 145, 0);
+$color-red: #D95E52;
+$color-brown: #732A10;
+$color-gray: #747E7E;
+
+.status-badge-blue {
+    color: $color-white !important;
+    background-color: $color-blue !important;
+}
+
+.status-badge-celeste {
+    color: $color-white !important;
+    background-color: $color-celeste !important;
+}
+
+.status-badge-green {
+    color: $color-white !important;
+    background-color: $color-green !important;
+}
+
+.status-badge-purple {
+    color: $color-white !important;
+    background-color: $color-purple !important;
+}
+
+.status-badge-orange {
+    color: $color-white !important;
+    background-color: $color-orange !important;
+}
+
+.status-badge-red {
+    color: $color-white !important;
+    background-color: $color-red !important;
+}
+
+.status-badge-dark {
+    color: $color-white !important;
+    background-color: $color-black !important;
+}
+
+.status-badge-brown {
+    color: $color-white !important;
+    background-color: $color-brown;
+}
+
+.status-badge-gray {
+    color: $color-black !important;
+    background-color: $color-gray !important;
+}
+
+.btn-color-borrar {
+    color: #BF0413 !important;
+    font-weight: 500;
+    border: 1px solid #BF0413;
+}
+
+.btn-color-borrar:hover {
+    color: #fff !important; 
+    font-weight: 500;
+    background-color: #BF0413 !important;
+}
+
+.btn-color-nuevo {
+    color: #689F38 !important;
+    font-weight: 500;
+    border: 1px solid #689F38!important;
+}
+
+.btn-color-nuevo:hover {
+    color: #fff !important;
+    font-weight: 500;
+    background-color: #689F38 !important;
+}
+
+.btn-color-guardar {
+    color: #8c239e !important;
+    font-weight: 500;
+    border: 1px solid #8c239e !important;
+}
+
+.btn-color-guardar:hover {
+    color: #fff !important;
+    font-weight: 500;
+    background-color: #8c239e !important;
+}
+
+.btn-color-agregar {
+    color: #003e87 !important;
+    font-weight: 500;
+    border: 1px solid #003e87 !important;
+}
+
+.btn-color-agregar:hover {
+    color: #fff !important;
+    font-weight: 500;
+    background-color: #003e87 !important;
+}
+
+::ng-deep th .pi {
+    color: white !important;
+}

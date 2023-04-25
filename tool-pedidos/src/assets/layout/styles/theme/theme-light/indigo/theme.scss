@@ -1,0 +1,14 @@
+$primaryColor:#003e82;
+$dangerColor:#BF0411;
+$warningColor: #FBC02D;
+$successColor: #057035;
+$primaryLightestColor: #E8EAF6;
+$primaryMenuTextColor: $primaryColor;
+$primaryTextColor:#ffffff;
+$accentColor:#ff4081;
+$accentTextColor:#ffffff;
+
+@import '../_variables';
+@import '../../_compact';
+@import '../../designer/_components';
+@import '../../extensions/_vendor_extensions';
